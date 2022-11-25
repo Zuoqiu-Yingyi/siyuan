@@ -18,19 +18,120 @@ import {blockRender} from "../markdown/blockRender";
 import {uploadLocalFiles} from "../upload";
 import {insertHTML} from "./insertHTML";
 import {isBrowser} from "../../util/functions";
+import {hideElements} from "../ui/hideElements";
 
-const moveTo = async (protyle: IProtyle, sourceElements: Element[], targetElement: Element, isSameDoc: boolean, position: InsertPosition) => {
-    let topSourceElement
-    const doOperations: IOperation[] = []
-    const undoOperations: IOperation[] = []
-    const foldHeadingIds: { id: string, parentID: string }[] = []
-    const targetId = targetElement.getAttribute("data-node-id")
-    if (position === "afterend") {
-        sourceElements.reverse();
+const moveToNew = (protyle: IProtyle, sourceElements: Element[], targetElement: Element, newSourceElement: Element,
+                   isSameDoc: boolean, isBottom: boolean, isCopy: boolean) => {
+    let topSourceElement;
+    const targetId = targetElement.getAttribute("data-node-id");
+    const newSourceId = newSourceElement.getAttribute("data-node-id")
+    const doOperations: IOperation[] = [];
+    const undoOperations: IOperation[] = [];
+    targetElement.insertAdjacentElement(isBottom ? "afterend" : "beforebegin", newSourceElement);
+    if (isBottom) {
+        doOperations.push({
+            action: "insert",
+            data: newSourceElement.outerHTML,
+            id: newSourceId,
+            previousID: targetId,
+        })
+    } else {
+        doOperations.push({
+            action: "insert",
+            data: newSourceElement.outerHTML,
+            id: newSourceId,
+            nextID: targetId,
+        })
     }
-    sourceElements.forEach((item, index) => {
+    sourceElements.reverse().forEach((item, index) => {
+        const itemId = item.getAttribute("data-node-id")
+        if (index === sourceElements.length - 1) {
+            topSourceElement = getTopAloneElement(item);
+            if (topSourceElement.isSameNode(item)) {
+                topSourceElement = undefined;
+            }
+        }
+        const copyId = Lute.NewNodeID()
+        if (isCopy) {
+            undoOperations.push({
+                action: "delete",
+                id: copyId,
+            });
+        } else {
+            undoOperations.push({
+                action: "move",
+                id: itemId,
+                previousID: item.previousElementSibling?.getAttribute("data-node-id"),
+                parentID: item.parentElement.getAttribute("data-node-id") || protyle.block.rootID,
+            });
+        }
+        if (!isSameDoc && !isCopy) {
+            // 打开两个相同的文档
+            const sameElement = protyle.wysiwyg.element.querySelector(`[data-node-id="${itemId}"]`);
+            if (sameElement) {
+                sameElement.remove();
+            }
+        }
+        if (isCopy) {
+            const copyElement = item.cloneNode(true) as HTMLElement;
+            copyElement.setAttribute("data-node-id", copyId);
+            copyElement.querySelectorAll("[data-node-id]").forEach((e) => {
+                const newId = Lute.NewNodeID();
+                e.setAttribute("data-node-id", newId);
+                e.setAttribute("updated", newId.split("-")[0]);
+            });
+            newSourceElement.insertAdjacentElement("afterbegin", copyElement);
+            doOperations.push({
+                action: "insert",
+                id: copyId,
+                data: copyElement.outerHTML,
+                parentID: newSourceId,
+            });
+        } else {
+            newSourceElement.insertAdjacentElement("afterbegin", item);
+            doOperations.push({
+                action: "move",
+                id: itemId,
+                parentID: newSourceId,
+            });
+        }
+    });
+    undoOperations.reverse();
+    if (newSourceElement.getAttribute("data-subtype") === "o") {
+        undoOperations.splice(0, 0, {
+            action: "update",
+            id: newSourceId,
+            data: newSourceElement.outerHTML
+        });
+        updateListOrder(newSourceElement, 1);
+        doOperations.push({
+            action: "update",
+            id: newSourceId,
+            data: newSourceElement.outerHTML
+        });
+    }
+    undoOperations.push({
+        action: "delete",
+        id: newSourceId,
+    });
+    return {
+        doOperations,
+        undoOperations,
+        topSourceElement,
+    };
+}
+
+const moveTo = async (protyle: IProtyle, sourceElements: Element[], targetElement: Element,
+                      isSameDoc: boolean, position: InsertPosition, isCopy: boolean) => {
+    let topSourceElement;
+    const doOperations: IOperation[] = [];
+    const undoOperations: IOperation[] = [];
+    const foldHeadingIds: { id: string, parentID: string }[] = [];
+    const targetId = targetElement.getAttribute("data-node-id");
+    let tempTargetElement = targetElement;
+    sourceElements.reverse().forEach((item, index) => {
         const id = item.getAttribute("data-node-id");
-        const parentID = item.parentElement.getAttribute("data-node-id") || protyle.block.rootID
+        const parentID = item.parentElement.getAttribute("data-node-id") || protyle.block.rootID;
         if (index === sourceElements.length - 1) {
             topSourceElement = getTopAloneElement(item);
             if (topSourceElement.isSameNode(item)) {
@@ -42,29 +143,63 @@ const moveTo = async (protyle: IProtyle, sourceElements: Element[], targetElemen
         }
         if (item.getAttribute("data-type") === "NodeHeading" && item.getAttribute("fold") === "1") {
             item.removeAttribute("fold");
-            foldHeadingIds.push({id, parentID});
+            if (isCopy) {
+                foldHeadingIds.push({id, parentID});
+            }
         }
-        undoOperations.push({
-            action: "move",
-            id,
-            previousID: item.previousElementSibling?.getAttribute("data-node-id"),
-            parentID,
-        });
-        if (!isSameDoc) {
+        let copyId
+        let copyElement
+        if (isCopy) {
+            copyId = Lute.NewNodeID();
+            undoOperations.push({
+                action: "delete",
+                id: copyId,
+            });
+        } else {
+            undoOperations.push({
+                action: "move",
+                id,
+                previousID: item.previousElementSibling?.getAttribute("data-node-id"),
+                parentID,
+            });
+        }
+        if (!isSameDoc && !isCopy) {
             // 打开两个相同的文档
             const sameElement = protyle.wysiwyg.element.querySelector(`[data-node-id="${id}"]`);
             if (sameElement) {
                 sameElement.remove();
             }
         }
-        targetElement.insertAdjacentElement(position, item);
-        doOperations.push({
-            action: "move",
-            id,
-            previousID: position === "afterend" ? targetId : item.previousElementSibling?.getAttribute("data-node-id"), // 不能使用常量，移动后会被修改
-            parentID: item.parentElement?.getAttribute("data-node-id") || protyle.block.parentID || protyle.block.rootID,
-        });
-    })
+
+        if (isCopy) {
+            copyElement = item.cloneNode(true) as HTMLElement;
+            copyElement.setAttribute("data-node-id", copyId);
+            copyElement.querySelectorAll("[data-node-id]").forEach((e) => {
+                const newId = Lute.NewNodeID();
+                e.setAttribute("data-node-id", newId);
+                e.setAttribute("updated", newId.split("-")[0]);
+            });
+            tempTargetElement.insertAdjacentElement(position, copyElement);
+            doOperations.push({
+                action: "insert",
+                id: copyId,
+                data: copyElement.outerHTML,
+                previousID: position === "afterend" ? targetId : item.previousElementSibling?.getAttribute("data-node-id"), // 不能使用常量，移动后会被修改
+                parentID: item.parentElement?.getAttribute("data-node-id") || protyle.block.parentID || protyle.block.rootID,
+            });
+        } else {
+            tempTargetElement.insertAdjacentElement(position, item);
+            doOperations.push({
+                action: "move",
+                id,
+                previousID: position === "afterend" ? targetId : item.previousElementSibling?.getAttribute("data-node-id"), // 不能使用常量，移动后会被修改
+                parentID: item.parentElement?.getAttribute("data-node-id") || protyle.block.parentID || protyle.block.rootID,
+            });
+        }
+        if (position !== "afterend") {
+            tempTargetElement = isCopy ? copyElement : item;
+        }
+    });
     undoOperations.reverse();
     for (let j = 0; j < foldHeadingIds.length; j++) {
         const childrenItem = foldHeadingIds[j];
@@ -76,7 +211,7 @@ const moveTo = async (protyle: IProtyle, sourceElements: Element[], targetElemen
                 previousID: childrenItem.id,
                 parentID: childrenItem.parentID,
             });
-        })
+        });
         undoOperations.push({
             action: "foldHeading",
             id: childrenItem.id,
@@ -91,10 +226,11 @@ const moveTo = async (protyle: IProtyle, sourceElements: Element[], targetElemen
         doOperations,
         undoOperations,
         topSourceElement,
-    }
-}
+    };
+};
 
-const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElement: Element, isBottom: boolean, direct: "col" | "row") => {
+const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElement: Element, isBottom: boolean,
+                      direct: "col" | "row", isCopy: boolean) => {
     const isSameDoc = protyle.element.contains(sourceElements[0]);
 
     let newSourceElement: HTMLElement;
@@ -126,6 +262,7 @@ const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElemen
         parentID: sbElement.parentElement.getAttribute("data-node-id") || protyle.block.parentID || protyle.block.rootID
     }];
     if (newSourceElement) {
+        const newSourceId = newSourceElement.getAttribute("data-node-id")
         sbElement.insertAdjacentElement("afterbegin", targetElement);
         doOperations.push({
             action: "move",
@@ -137,7 +274,7 @@ const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElemen
             doOperations.push({
                 action: "insert",
                 data: newSourceElement.outerHTML,
-                id: newSourceElement.getAttribute("data-node-id"),
+                id: newSourceId,
                 previousID: targetElement.getAttribute("data-node-id"),
             });
         } else {
@@ -145,7 +282,7 @@ const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElemen
             doOperations.push({
                 action: "insert",
                 data: newSourceElement.outerHTML,
-                id: newSourceElement.getAttribute("data-node-id"),
+                id: newSourceId,
                 nextID: targetElement.getAttribute("data-node-id"),
             });
         }
@@ -156,68 +293,123 @@ const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElemen
                     topSourceElement = undefined;
                 }
             }
-            undoOperations.push({
-                action: "move",
-                id: item.getAttribute("data-node-id"),
-                previousID: item.previousElementSibling?.getAttribute("data-node-id"),
-                parentID: item.parentElement.getAttribute("data-node-id") || protyle.block.rootID,
-            });
-            if (!isSameDoc) {
+            const copyId = Lute.NewNodeID()
+            if (isCopy) {
+                undoOperations.push({
+                    action: "delete",
+                    id: copyId
+                });
+            } else {
+                undoOperations.push({
+                    action: "move",
+                    id: item.getAttribute("data-node-id"),
+                    previousID: item.previousElementSibling?.getAttribute("data-node-id"),
+                    parentID: item.parentElement.getAttribute("data-node-id") || protyle.block.rootID,
+                });
+            }
+            if (!isSameDoc && !isCopy) {
                 // 打开两个相同的文档
                 const sameElement = protyle.wysiwyg.element.querySelector(`[data-node-id="${item.getAttribute("data-node-id")}"]`);
                 if (sameElement) {
                     sameElement.remove();
                 }
             }
-            newSourceElement.insertAdjacentElement("afterbegin", item);
-            doOperations.push({
-                action: "move",
-                id: item.getAttribute("data-node-id"),
-                parentID: newSourceElement.getAttribute("data-node-id"),
-            });
+            if (isCopy) {
+                const copyElement = item.cloneNode(true) as HTMLElement;
+                copyElement.setAttribute("data-node-id", copyId);
+                copyElement.querySelectorAll("[data-node-id]").forEach((e) => {
+                    const newId = Lute.NewNodeID();
+                    e.setAttribute("data-node-id", newId);
+                    e.setAttribute("updated", newId.split("-")[0]);
+                });
+                newSourceElement.insertAdjacentElement("afterbegin", copyElement);
+                doOperations.push({
+                    action: "insert",
+                    id: copyId,
+                    data: copyElement.outerHTML,
+                    parentID: newSourceId,
+                });
+            } else {
+                newSourceElement.insertAdjacentElement("afterbegin", item);
+                doOperations.push({
+                    action: "move",
+                    id: item.getAttribute("data-node-id"),
+                    parentID: newSourceId,
+                });
+            }
         });
         undoOperations.reverse();
         undoOperations.push({
             action: "delete",
-            id: newSourceElement.getAttribute("data-node-id"),
+            id: newSourceId,
         });
     } else {
-        const foldHeadingIds: { id: string, parentID: string }[] = []
+        const foldHeadingIds: { id: string, parentID: string }[] = [];
+        let afterPreviousID;
         sourceElements.reverse().forEach((item, index) => {
             const id = item.getAttribute("data-node-id");
-            const parentID = item.parentElement.getAttribute("data-node-id") || protyle.block.rootID
+            const parentID = item.parentElement.getAttribute("data-node-id") || protyle.block.rootID;
             if (index === sourceElements.length - 1) {
                 topSourceElement = getTopAloneElement(item);
                 if (topSourceElement.isSameNode(item)) {
                     topSourceElement = undefined;
                 }
             }
+            const copyId = Lute.NewNodeID()
+            if (index === 0) {
+                afterPreviousID = isCopy ? copyId : id;
+            }
             if (item.getAttribute("data-type") === "NodeHeading" && item.getAttribute("fold") === "1") {
                 item.removeAttribute("fold");
-                foldHeadingIds.push({id, parentID});
+                if (isCopy) {
+                    foldHeadingIds.push({id, parentID});
+                }
             }
-            undoOperations.push({
-                action: "move",
-                id,
-                previousID: item.previousElementSibling?.getAttribute("data-node-id"),
-                parentID
-            });
-            if (!isSameDoc) {
+            if (isCopy) {
+                undoOperations.push({
+                    action: "delete",
+                    id: copyId,
+                });
+            } else {
+                undoOperations.push({
+                    action: "move",
+                    id,
+                    previousID: item.previousElementSibling?.getAttribute("data-node-id"),
+                    parentID
+                });
+            }
+            if (!isSameDoc && !isCopy) {
                 // 打开两个相同的文档
                 const sameElement = protyle.wysiwyg.element.querySelector(`[data-node-id="${id}"]`);
                 if (sameElement) {
                     sameElement.remove();
                 }
             }
-            sbElement.insertAdjacentElement("afterbegin", item);
-            doOperations.push({
-                action: "move",
-                id,
-                parentID: sbElement.getAttribute("data-node-id"),
-            });
+            if (isCopy) {
+                const copyElement = item.cloneNode(true) as HTMLElement;
+                copyElement.setAttribute("data-node-id", copyId);
+                copyElement.querySelectorAll("[data-node-id]").forEach((e) => {
+                    const newId = Lute.NewNodeID();
+                    e.setAttribute("data-node-id", newId);
+                    e.setAttribute("updated", newId.split("-")[0]);
+                });
+                sbElement.insertAdjacentElement("afterbegin", copyElement);
+                doOperations.push({
+                    action: "insert",
+                    id: copyId,
+                    data: copyElement.outerHTML,
+                    parentID: sbElement.getAttribute("data-node-id"),
+                });
+            } else {
+                sbElement.insertAdjacentElement("afterbegin", item);
+                doOperations.push({
+                    action: "move",
+                    id,
+                    parentID: sbElement.getAttribute("data-node-id"),
+                });
+            }
         });
         undoOperations.reverse();
-        let afterPreviousID
         for (let j = 0; j < foldHeadingIds.length; j++) {
             const childrenItem = foldHeadingIds[j];
             const headingIds = await fetchSyncPost("/api/block/getHeadingChildrenIDs", {id: childrenItem.id});
@@ -228,9 +420,9 @@ const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElemen
                     previousID: childrenItem.id,
                     parentID: childrenItem.parentID,
                 });
-            })
+            });
             if (j === 0) {
-                afterPreviousID = headingIds.data[0]
+                afterPreviousID = headingIds.data[0];
             }
             undoOperations.push({
                 action: "foldHeading",
@@ -250,11 +442,11 @@ const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElemen
                 parentID: sbElement.getAttribute("data-node-id")
             });
         } else {
-            sbElement.insertAdjacentElement("beforeend", targetElement);
+            sbElement.lastElementChild.insertAdjacentElement("beforebegin", targetElement);
             doOperations.push({
                 action: "move",
                 id: targetElement.getAttribute("data-node-id"),
-                previousID: afterPreviousID || doOperations[0].id
+                previousID: afterPreviousID
             });
         }
     }
@@ -263,7 +455,7 @@ const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElemen
         id: sbElement.getAttribute("data-node-id"),
     });
     // https://github.com/siyuan-note/insider/issues/536
-    if (oldSourceParentElement && oldSourceParentElement.classList.contains("list") &&
+    if (!isCopy && oldSourceParentElement && oldSourceParentElement.classList.contains("list") &&
         oldSourceParentElement.getAttribute("data-subtype") === "o" &&
         !oldSourceParentElement.isSameNode(sourceElements[0].parentElement) && oldSourceParentElement.childElementCount > 1) {
         Array.from(oldSourceParentElement.children).forEach((item) => {
@@ -290,7 +482,7 @@ const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElemen
         });
     }
     // 删除空元素
-    if (topSourceElement) {
+    if (!isCopy && topSourceElement) {
         doOperations.push({
             action: "delete",
             id: topSourceElement.getAttribute("data-node-id"),
@@ -312,12 +504,12 @@ const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElemen
         oldSourceParentElement = topSourceElement.parentElement;
         topSourceElement.remove();
     }
-    if (oldSourceParentElement && oldSourceParentElement.classList.contains("sb") && oldSourceParentElement.childElementCount === 2) {
+    if (!isCopy && oldSourceParentElement && oldSourceParentElement.classList.contains("sb") && oldSourceParentElement.childElementCount === 2) {
         // 拖拽后，sb 只剩下一个元素
         const sbData = cancelSB(protyle, oldSourceParentElement);
         doOperations.push(sbData.doOperations[0], sbData.doOperations[1]);
         undoOperations.splice(0, 0, sbData.undoOperations[0], sbData.undoOperations[1]);
-    } else if (oldSourceParentElement && oldSourceParentElement.classList.contains("protyle-wysiwyg") && oldSourceParentElement.innerHTML === "") {
+    } else if (!isCopy && oldSourceParentElement && oldSourceParentElement.classList.contains("protyle-wysiwyg") && oldSourceParentElement.innerHTML === "") {
         /// #if !MOBILE
         // 拖拽后，根文档原内容为空，且不为悬浮窗
         const protyleElement = hasClosestByClassName(oldSourceParentElement, "protyle", true);
@@ -339,7 +531,7 @@ const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElemen
         }
         /// #endif
     }
-    if (isSameDoc) {
+    if (isSameDoc || isCopy) {
         transaction(protyle, doOperations, undoOperations);
     } else {
         // 跨文档不支持撤销
@@ -348,7 +540,7 @@ const dragSb = async (protyle: IProtyle, sourceElements: Element[], targetElemen
     focusBlock(sourceElements[0]);
 };
 
-const dragSame = async (protyle: IProtyle, sourceElements: Element[], targetElement: Element, isBottom: boolean) => {
+const dragSame = async (protyle: IProtyle, sourceElements: Element[], targetElement: Element, isBottom: boolean, isCopy: boolean) => {
     const isSameDoc = protyle.element.contains(sourceElements[0]);
     const doOperations: IOperation[] = [];
     const undoOperations: IOperation[] = [];
@@ -364,123 +556,26 @@ const dragSame = async (protyle: IProtyle, sourceElements: Element[], targetElem
     }
     let topSourceElement: Element;
     let oldSourceParentElement = sourceElements[0].parentElement;
-    const targetId = targetElement.getAttribute("data-node-id")
     if (isBottom) {
         if (newSourceElement) {
-            targetElement.insertAdjacentElement("afterend", newSourceElement);
-            doOperations.push({
-                action: "insert",
-                data: newSourceElement.outerHTML,
-                id: newSourceElement.getAttribute("data-node-id"),
-                previousID: targetId,
-            });
-            sourceElements.reverse().forEach((item, index) => {
-                if (index === sourceElements.length - 1) {
-                    topSourceElement = getTopAloneElement(item);
-                    if (topSourceElement.isSameNode(item)) {
-                        topSourceElement = undefined;
-                    }
-                }
-                undoOperations.push({
-                    action: "move",
-                    id: item.getAttribute("data-node-id"),
-                    previousID: item.previousElementSibling?.getAttribute("data-node-id"),
-                    parentID: item.parentElement.getAttribute("data-node-id") || protyle.block.rootID,
-                });
-                if (!isSameDoc) {
-                    // 打开两个相同的文档
-                    const sameElement = protyle.wysiwyg.element.querySelector(`[data-node-id="${item.getAttribute("data-node-id")}"]`);
-                    if (sameElement) {
-                        sameElement.remove();
-                    }
-                }
-                newSourceElement.insertAdjacentElement("afterbegin", item);
-                doOperations.push({
-                    action: "move",
-                    id: item.getAttribute("data-node-id"),
-                    parentID: newSourceElement.getAttribute("data-node-id"),
-                });
-            });
-            undoOperations.reverse();
-            if (newSourceElement.getAttribute("data-subtype") === "o") {
-                undoOperations.splice(0, 0, {
-                    action: "update",
-                    id: newSourceElement.getAttribute("data-node-id"),
-                    data: newSourceElement.outerHTML
-                });
-                updateListOrder(newSourceElement, 1);
-                doOperations.push({
-                    action: "update",
-                    id: newSourceElement.getAttribute("data-node-id"),
-                    data: newSourceElement.outerHTML
-                });
-            }
-            undoOperations.push({
-                action: "delete",
-                id: newSourceElement.getAttribute("data-node-id"),
-            });
+            const moveToResult = moveToNew(protyle, sourceElements, targetElement, newSourceElement, isSameDoc, isBottom, isCopy);
+            doOperations.push(...moveToResult.doOperations);
+            undoOperations.push(...moveToResult.undoOperations);
+            topSourceElement = moveToResult.topSourceElement;
         } else {
-            const moveToResult = await moveTo(protyle, sourceElements, targetElement, isSameDoc, "afterend");
+            const moveToResult = await moveTo(protyle, sourceElements, targetElement, isSameDoc, "afterend", isCopy);
             doOperations.push(...moveToResult.doOperations);
             undoOperations.push(...moveToResult.undoOperations);
             topSourceElement = moveToResult.topSourceElement;
         }
     } else {
         if (newSourceElement) {
-            targetElement.insertAdjacentElement("beforebegin", newSourceElement);
-            doOperations.push({
-                action: "insert",
-                data: newSourceElement.outerHTML,
-                id: newSourceElement.getAttribute("data-node-id"),
-                nextID: targetId,
-            });
-            sourceElements.reverse().forEach((item, index) => {
-                if (index === sourceElements.length - 1) {
-                    topSourceElement = getTopAloneElement(item);
-                    if (topSourceElement.isSameNode(item)) {
-                        topSourceElement = undefined;
-                    }
-                }
-                undoOperations.push({
-                    action: "move",
-                    id: item.getAttribute("data-node-id"),
-                    previousID: item.previousElementSibling?.getAttribute("data-node-id"),
-                    parentID: item.parentElement.getAttribute("data-node-id") || protyle.block.rootID,
-                });
-                if (!isSameDoc) {
-                    // 打开两个相同的文档
-                    const sameElement = protyle.wysiwyg.element.querySelector(`[data-node-id="${item.getAttribute("data-node-id")}"]`);
-                    if (sameElement) {
-                        sameElement.remove();
-                    }
-                }
-                newSourceElement.insertAdjacentElement("afterbegin", item);
-                doOperations.push({
-                    action: "move",
-                    id: item.getAttribute("data-node-id"),
-                    parentID: newSourceElement.getAttribute("data-node-id"),
-                });
-            });
-            undoOperations.reverse();
-            if (newSourceElement.getAttribute("data-subtype") === "o") {
-                undoOperations.splice(0, 0, {
-                    action: "update",
-                    id: newSourceElement.getAttribute("data-node-id"),
-                    data: newSourceElement.outerHTML
-                });
-                updateListOrder(newSourceElement, 1);
-                doOperations.push({
-                    action: "update",
-                    id: newSourceElement.getAttribute("data-node-id"),
-                    data: newSourceElement.outerHTML
-                });
-            }
-            undoOperations.push({
-                action: "delete",
-                id: newSourceElement.getAttribute("data-node-id"),
-            });
+            const moveToResult = moveToNew(protyle, sourceElements, targetElement, newSourceElement, isSameDoc, isBottom, isCopy);
+            doOperations.push(...moveToResult.doOperations);
+            undoOperations.push(...moveToResult.undoOperations);
+            topSourceElement = moveToResult.topSourceElement;
         } else {
-            const moveToResult = await moveTo(protyle, sourceElements, targetElement, isSameDoc, "beforebegin");
+            const moveToResult = await moveTo(protyle, sourceElements, targetElement, isSameDoc, "beforebegin", isCopy);
             doOperations.push(...moveToResult.doOperations);
             undoOperations.push(...moveToResult.undoOperations);
             topSourceElement = moveToResult.topSourceElement;
@@ -510,7 +605,8 @@ const dragSame = async (protyle: IProtyle, sourceElements: Element[], targetElem
             });
         });
     }
-    if (oldSourceParentElement && oldSourceParentElement.classList.contains("list") &&
+    if (!isCopy &&
+        oldSourceParentElement && oldSourceParentElement.classList.contains("list") &&
         oldSourceParentElement.getAttribute("data-subtype") === "o" &&
         !oldSourceParentElement.isSameNode(sourceElements[0].parentElement) && oldSourceParentElement.childElementCount > 1) {
         Array.from(oldSourceParentElement.children).forEach((item) => {
@@ -545,7 +641,7 @@ const dragSame = async (protyle: IProtyle, sourceElements: Element[], targetElem
     }
 
     // 删除空元素
-    if (topSourceElement) {
+    if (!isCopy && topSourceElement) {
         doOperations.push({
             action: "delete",
             id: topSourceElement.getAttribute("data-node-id"),
@@ -567,12 +663,12 @@ const dragSame = async (protyle: IProtyle, sourceElements: Element[], targetElem
             }
         }
     }
-    if (oldSourceParentElement && oldSourceParentElement.classList.contains("sb") && oldSourceParentElement.childElementCount === 2) {
+    if (!isCopy && oldSourceParentElement && oldSourceParentElement.classList.contains("sb") && oldSourceParentElement.childElementCount === 2) {
         // 拖拽后，sb 只剩下一个元素
         const sbData = cancelSB(protyle, oldSourceParentElement);
         doOperations.push(sbData.doOperations[0], sbData.doOperations[1]);
         undoOperations.splice(0, 0, sbData.undoOperations[0], sbData.undoOperations[1]);
-    } else if (oldSourceParentElement && oldSourceParentElement.classList.contains("protyle-wysiwyg") && oldSourceParentElement.childElementCount === 0) {
+    } else if (!isCopy && oldSourceParentElement && oldSourceParentElement.classList.contains("protyle-wysiwyg") && oldSourceParentElement.childElementCount === 0) {
         /// #if !MOBILE
         // 拖拽后，根文档原内容为空，且不为悬浮窗
         const protyleElement = hasClosestByClassName(oldSourceParentElement, "protyle", true);
@@ -594,7 +690,7 @@ const dragSame = async (protyle: IProtyle, sourceElements: Element[], targetElem
         }
         /// #endif
     }
-    if (isSameDoc) {
+    if (isSameDoc || isCopy) {
         transaction(protyle, doOperations, undoOperations);
     } else {
         // 跨文档不支持撤销
@@ -675,20 +771,21 @@ export const dropEvent = (protyle: IProtyle, editorElement: HTMLElement) => {
                 insertHTML(protyle.lute.SpinBlockDOM(html), protyle, true);
                 blockRender(protyle, protyle.wysiwyg.element);
             } else if (targetElement) {
+                hideElements(["gutter"], protyle);
                 const targetClass = targetElement.className.split(" ");
                 targetElement.classList.remove("dragover__bottom", "dragover__top", "dragover__left", "dragover__right", "protyle-wysiwyg--select");
                 if (targetElement.parentElement.getAttribute("data-type") === "NodeSuperBlock" &&
                     targetElement.parentElement.getAttribute("data-sb-layout") === "col") {
                     if (targetClass.includes("dragover__left") || targetClass.includes("dragover__right")) {
-                        dragSame(protyle, sourceElements, targetElement, targetClass.includes("dragover__right"));
+                        dragSame(protyle, sourceElements, targetElement, targetClass.includes("dragover__right"), event.ctrlKey);
                     } else {
-                        dragSb(protyle, sourceElements, targetElement, targetClass.includes("dragover__bottom"), "row");
+                        dragSb(protyle, sourceElements, targetElement, targetClass.includes("dragover__bottom"), "row", event.ctrlKey);
                     }
                 } else {
                     if (targetClass.includes("dragover__left") || targetClass.includes("dragover__right")) {
-                        dragSb(protyle, sourceElements, targetElement, targetClass.includes("dragover__right"), "col");
+                        dragSb(protyle, sourceElements, targetElement, targetClass.includes("dragover__right"), "col", event.ctrlKey);
                     } else {
-                        dragSame(protyle, sourceElements, targetElement, targetClass.includes("dragover__bottom"));
+                        dragSame(protyle, sourceElements, targetElement, targetClass.includes("dragover__bottom"), event.ctrlKey);
                     }
                 }
             }

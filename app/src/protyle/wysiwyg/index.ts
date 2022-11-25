@@ -37,7 +37,7 @@ import {hideElements} from "../ui/hideElements";
 import {shell} from "electron";
 import {getCurrentWindow} from "@electron/remote";
 /// #endif
-import {removeEmbed} from "./removeEmbed";
+import {getEnableHTML, removeEmbed} from "./removeEmbed";
 import {keydown} from "./keydown";
 import {openMobileFileById} from "../../mobile/editor";
 import {removeBlock} from "./remove";
@@ -276,6 +276,9 @@ export class WYSIWYG {
                         textPlain = tempElement.textContent.replace(Constants.ZWSP, "");
                     }
                 }
+            }
+            if (protyle.disabled) {
+                html = getEnableHTML(html)
             }
             event.clipboardData.setData("text/plain", textPlain || protyle.lute.BlockDOM2StdMd(html).trimEnd());
             event.clipboardData.setData("text/html", html + Constants.ZWSP);
@@ -1134,11 +1137,8 @@ export class WYSIWYG {
                 window.siyuan.menus.menu.popup({x, y});
                 return false;
             }
-            if (protyle.disabled) {
-                return false;
-            }
             protyle.toolbar.range = getEditorRange(protyle.element);
-            if (target.tagName === "SPAN") { // https://ld246.com/article/1665141518103
+            if (target.tagName === "SPAN" && !protyle.disabled) { // https://ld246.com/article/1665141518103
                 const types = protyle.toolbar.getCurrentType(protyle.toolbar.range);
                 if (types.includes("block-ref")) {
                     refMenu(protyle, target);
@@ -1169,7 +1169,7 @@ export class WYSIWYG {
                     return false;
                 }
             }
-            if (target.tagName === "IMG" && hasClosestByClassName(target, "img")) {
+            if (!protyle.disabled && target.tagName === "IMG" && hasClosestByClassName(target, "img")) {
                 imgMenu(protyle, protyle.toolbar.range, target.parentElement.parentElement, {
                     clientX: x + 4,
                     clientY: y

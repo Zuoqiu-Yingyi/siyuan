@@ -314,6 +314,13 @@ func SetSyncProviderS3(s3 *conf.S3) (err error) {
 	syncLock.Lock()
 	defer syncLock.Unlock()
 
+	s3.Endpoint = strings.TrimSpace(s3.Endpoint)
+	s3.Endpoint = util.NormalizeEndpoint(s3.Endpoint)
+	s3.AccessKey = strings.TrimSpace(s3.AccessKey)
+	s3.SecretKey = strings.TrimSpace(s3.SecretKey)
+	s3.Bucket = strings.TrimSpace(s3.Bucket)
+	s3.Region = strings.TrimSpace(s3.Region)
+
 	Conf.Sync.S3 = s3
 	Conf.Save()
 	return
@@ -322,6 +329,11 @@ func SetSyncProviderS3(s3 *conf.S3) (err error) {
 func SetSyncProviderWebDAV(webdav *conf.WebDAV) (err error) {
 	syncLock.Lock()
 	defer syncLock.Unlock()
+
+	webdav.Endpoint = strings.TrimSpace(webdav.Endpoint)
+	webdav.Endpoint = util.NormalizeEndpoint(webdav.Endpoint)
+	webdav.Username = strings.TrimSpace(webdav.Username)
+	webdav.Password = strings.TrimSpace(webdav.Password)
 
 	Conf.Sync.WebDAV = webdav
 	Conf.Save()

@@ -450,6 +450,7 @@ func parseStdMd(markdown []byte) (ret *parse.Tree) {
 	luteEngine.SetSetext(false)
 	luteEngine.SetYamlFrontMatter(false)
 	luteEngine.SetLinkRef(false)
+	luteEngine.SetImgPathAllowSpace(true)
 	ret = parse.Parse("", markdown, luteEngine.ParseOptions)
 	genTreeID(ret)
 	return
@@ -468,7 +469,7 @@ func genTreeID(tree *parse.Tree) {
 			return ast.WalkContinue
 		}
 
-		if treenode.IsEmptyBlockIAL(n) {
+		if n.IsEmptyBlockIAL() {
 			// 空段落保留
 			p := &ast.Node{Type: ast.NodeParagraph}
 			p.KramdownIAL = parse.Tokens2IAL(n.Tokens)
