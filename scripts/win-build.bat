@@ -27,8 +27,8 @@ echo 'Building Electron'
 cd app
 call pnpm run dist
 
-cd ..
+@REM cd ..
 
-echo 'Building Appx'
-cd . > app\build\win-unpacked\resources\ms-store
-electron-windows-store --input-directory app\build\win-unpacked --output-directory app\build\ --package-version 1.0.0.0 --package-name SiYuan --manifest app\appx\AppxManifest.xml --assets app\appx\assets\ --make-pri true
+@REM echo 'Building Appx'
+@REM cd . > app\build\win-unpacked\resources\ms-store
+@REM electron-windows-store --input-directory app\build\win-unpacked --output-directory app\build\ --package-version 1.0.0.0 --package-name SiYuan --manifest app\appx\AppxManifest.xml --assets app\appx\assets\ --make-pri true
