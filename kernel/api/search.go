@@ -38,16 +38,21 @@ func findReplace(c *gin.Context) {
 
 	k := arg["k"].(string)
 	r := arg["r"].(string)
+	methodArg := arg["method"]
+	var method int // 0：文本，1：查询语法，2：SQL，3：正则表达式
+	if nil != methodArg {
+		method = int(methodArg.(float64))
+	}
 	idsArg := arg["ids"].([]interface{})
 	var ids []string
 	for _, id := range idsArg {
 		ids = append(ids, id.(string))
 	}
-	err := model.FindReplace(k, r, ids)
+	err := model.FindReplace(k, r, ids, method)
 	if nil != err {
 		ret.Code = -1
 		ret.Msg = err.Error()
-		ret.Data = map[string]interface{}{"closeTimeout": 3000}
+		ret.Data = map[string]interface{}{"closeTimeout": 5000}
 		return
 	}
 	return
@@ -207,12 +212,17 @@ func fullTextSearchBlock(c *gin.Context) {
 			types[t] = b.(bool)
 		}
 	}
-	querySyntaxArg := arg["querySyntax"]
-	var querySyntax bool
-	if nil != querySyntaxArg {
-		querySyntax = querySyntaxArg.(bool)
+	methodArg := arg["method"]
+	var method int // 0：文本，1：查询语法，2：SQL，3：正则表达式
+	if nil != methodArg {
+		method = int(methodArg.(float64))
 	}
-	blocks, matchedBlockCount, matchedRootCount := model.FullTextSearchBlock(query, box, path, types, querySyntax)
+	groupByArg := arg["groupBy"]
+	var groupBy int // 0：不分组，1：按文档分组
+	if nil != groupByArg {
+		groupBy = int(groupByArg.(float64))
+	}
+	blocks, matchedBlockCount, matchedRootCount := model.FullTextSearchBlock(query, box, path, types, method, groupBy)
 	ret.Data = map[string]interface{}{
 		"blocks":            blocks,
 		"matchedBlockCount": matchedBlockCount,

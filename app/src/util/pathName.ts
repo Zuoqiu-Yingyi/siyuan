@@ -85,7 +85,7 @@ const moveToPath = (fromPaths: string[], toNotebook: string, toPath: string) => 
     });
 };
 
-export const movePathTo = (paths?: string[], range?: Range, cb?: (toPath:string) => void) => {
+export const movePathTo = (paths?: string[], range?: Range, cb?: (toPath: string, toNotebook:string) => void, title?: string) => {
     const exitDialog = window.siyuan.dialogs.find((item) => {
         if (item.element.querySelector("#foldList")) {
             item.destroy();
@@ -96,7 +96,7 @@ export const movePathTo = (paths?: string[], range?: Range, cb?: (toPath:string)
         return;
     }
     const dialog = new Dialog({
-        title: `${window.siyuan.languages.move} <span class="ft__smaller ft__on-surface"></span>`,
+        title: `${title || window.siyuan.languages.move} <span class="ft__smaller ft__on-surface"></span>`,
         content: `<div>
     <div class="b3-form__icon" style="margin: 8px">
         <svg class="b3-form__icon-icon"><use xlink:href="#iconSearch"></use></svg>
@@ -132,7 +132,7 @@ export const movePathTo = (paths?: string[], range?: Range, cb?: (toPath:string)
     <span class="b3-list-item__toggle b3-list-item__toggle--hl">
         <svg class="b3-list-item__arrow"><use xlink:href="#iconRight"></use></svg>
     </span>
-    <span class="b3-list-item__graphic">${unicode2Emoji(item.icon || Constants.SIYUAN_IMAGE_NOTE)}</span>
+    ${unicode2Emoji(item.icon || Constants.SIYUAN_IMAGE_NOTE, false, "b3-list-item__graphic", true)}
     <span class="b3-list-item__text">${escapeHtml(item.name)}</span>
 </li></ul>`;
         }
@@ -158,7 +158,7 @@ export const movePathTo = (paths?: string[], range?: Range, cb?: (toPath:string)
             let fileHTML = "";
             data.data.forEach((item: { boxIcon: string, box: string, hPath: string, path: string }) => {
                 fileHTML += `<li style="padding: 4px" class="b3-list-item${fileHTML === "" ? " b3-list-item--focus" : ""}" data-path="${item.path}" data-box="${item.box}">
-    <span class="b3-list-item__graphic">${unicode2Emoji(item.boxIcon || Constants.SIYUAN_IMAGE_NOTE)}</span>
+    ${unicode2Emoji(item.boxIcon || Constants.SIYUAN_IMAGE_NOTE, false, "b3-list-item__graphic", true)}
     <span class="b3-list-item__showall">${escapeHtml(item.hPath)}</span>
 </li>`;
             });
@@ -309,7 +309,7 @@ export const movePathTo = (paths?: string[], range?: Range, cb?: (toPath:string)
         }
         if (event.key === "Enter") {
             if (cb) {
-                cb(currentItemElement.getAttribute("data-path"));
+                cb(currentItemElement.getAttribute("data-path"), currentItemElement.getAttribute("data-box"));
             } else {
                 moveToPath(paths, currentItemElement.getAttribute("data-box"), currentItemElement.getAttribute("data-path"));
             }
@@ -332,7 +332,7 @@ export const movePathTo = (paths?: string[], range?: Range, cb?: (toPath:string)
                     return;
                 }
                 if (cb) {
-                    cb(currentItemElement.getAttribute("data-path"));
+                    cb(currentItemElement.getAttribute("data-path"), currentItemElement.getAttribute("data-box"));
                 } else {
                     moveToPath(paths, currentItemElement.getAttribute("data-box"), currentItemElement.getAttribute("data-path"));
                 }
@@ -399,7 +399,7 @@ data-box="${notebookId}" class="b3-list-item" data-path="${item.path}">
     <span style="padding-left: ${(item.path.split("/").length - 2) * 18 + 22}px" class="b3-list-item__toggle b3-list-item__toggle--hl${item.subFileCount === 0 ? " fn__hidden" : ""}">
         <svg class="b3-list-item__arrow"><use xlink:href="#iconRight"></use></svg>
     </span>
-    <span class="b3-list-item__graphic">${unicode2Emoji(item.icon || (item.subFileCount === 0 ? Constants.SIYUAN_IMAGE_FILE : Constants.SIYUAN_IMAGE_FOLDER))}</span>
+    ${unicode2Emoji(item.icon || (item.subFileCount === 0 ? Constants.SIYUAN_IMAGE_FILE : Constants.SIYUAN_IMAGE_FOLDER), false, "b3-list-item__graphic", true)}
     <span class="b3-list-item__text">${getDisplayName(item.name, true, true)}</span>
     ${countHTML}
 </li>`;
@@ -425,6 +425,17 @@ export const getNotebookName = (id: string) => {
     window.siyuan.notebooks.find((item) => {
         if (item.id === id) {
             rootPath = item.name;
+            return true;
+        }
+    });
+    return rootPath;
+};
+
+export const getNotebookIcon = (id: string) => {
+    let rootPath = "";
+    window.siyuan.notebooks.find((item) => {
+        if (item.id === id) {
+            rootPath = item.icon;
             return true;
         }
     });

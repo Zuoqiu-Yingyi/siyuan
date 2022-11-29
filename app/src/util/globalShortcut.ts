@@ -280,6 +280,17 @@ export const globalShortcut = () => {
                     } else {
                         currentLiElement.parentElement.parentElement.nextElementSibling.innerHTML = currentLiElement.querySelector(".b3-list-item__text").innerHTML;
                     }
+                    const currentRect = currentLiElement.getBoundingClientRect();
+                    const currentParentRect = currentLiElement.parentElement.getBoundingClientRect();
+                    if (currentRect.top < currentParentRect.top) {
+                        currentLiElement.scrollIntoView(true);
+                    } else if (currentRect.bottom > currentParentRect.bottom) {
+                        currentLiElement.scrollIntoView(false);
+                    }
+                }
+                const originalElement = switchDialog.element.querySelector('[data-original="true"]');
+                if (originalElement) {
+                    originalElement.removeAttribute("data-original");
                 }
             } else if (event.key === "Control") {
                 let currentLiElement = switchDialog.element.querySelector(".b3-list-item--focus");
@@ -380,9 +391,13 @@ export const globalShortcut = () => {
                 }).forEach(item => {
                     let icon = `<svg class="b3-list-item__graphic"><use xlink:href="#${item.icon}"></use></svg>`;
                     let rootId = "";
+                    const initData = item.headElement.getAttribute("data-initdata");
                     if (item.model instanceof Editor) {
                         rootId = ` data-node-id="${item.model.editor.protyle.block.rootID}"`;
-                        icon = `<span class="b3-list-item__graphic">${unicode2Emoji(item.docIcon || Constants.SIYUAN_IMAGE_FILE)}</span>`;
+                        icon = unicode2Emoji(item.docIcon || Constants.SIYUAN_IMAGE_FILE, false, "b3-list-item__graphic", true);
+                    } else if (initData) {
+                        rootId = ` data-node-id="${JSON.parse(initData).rootId}"`;
+                        icon = unicode2Emoji(item.docIcon || Constants.SIYUAN_IMAGE_FILE, false, "b3-list-item__graphic", true);
                     }
                     tabHtml += `<li data-id="${item.id}"${rootId} class="b3-list-item${currentId === item.id ? " b3-list-item--focus" : ""}"${currentId === item.id ? ' data-original="true"' : ""}>${icon}<span class="b3-list-item__text">${escapeHtml(item.title)}</span></li>`;
                 });
@@ -399,8 +414,8 @@ export const globalShortcut = () => {
                 content: `<div class="fn__flex-column b3-dialog--switch">
     <div class="fn__hr"></div>
     <div class="fn__flex">
-        <ul class="b3-list b3-list--background">${dockHtml}</ul>
-        <ul class="b3-list b3-list--background">${tabHtml}</ul>
+        <ul class="b3-list b3-list--background" style="max-height: calc(70vh - 35px)">${dockHtml}</ul>
+        <ul class="b3-list b3-list--background" style="max-height: calc(70vh - 35px)">${tabHtml}</ul>
     </div>
     <div class="dialog__path"></div>
 </div>`,

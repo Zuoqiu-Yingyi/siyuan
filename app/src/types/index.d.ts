@@ -48,6 +48,31 @@ interface Window {
     hideKeyboardToolbar(): void
 }
 
+interface ISearchOption {
+    group: number,
+    hasReplace: boolean,
+    method: number //  0：文本，1：查询语法，2：SQL，3：正则表达式
+    hPath: string
+    idPath: string
+    k: string
+    r: string
+    replaceList: string[]
+    list: string[]
+    types: {
+        mathBlock: boolean
+        table: boolean
+        blockquote: boolean
+        superBlock: boolean
+        paragraph: boolean
+        document: boolean
+        heading: boolean
+        list: boolean
+        listItem: boolean
+        codeBlock: boolean
+        htmlBlock: boolean
+    }
+}
+
 interface ITextOption {
     color?: string,
     type: string
