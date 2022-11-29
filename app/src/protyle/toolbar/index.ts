@@ -21,7 +21,7 @@ import {highlightRender} from "../markdown/highlightRender";
 import {getContenteditableElement, hasNextSibling, hasPreviousSibling} from "../wysiwyg/getBlock";
 import {processRender} from "../util/processCode";
 import {BlockRef} from "./BlockRef";
-import {hintMoveBlock, hintRenderAssets, hintRenderTemplate, hintRenderWidget} from "../hint/extend";
+import {hintRenderAssets, hintRenderTemplate, hintRenderWidget} from "../hint/extend";
 import {blockRender} from "../markdown/blockRender";
 /// #if !BROWSER
 import {clipboard, nativeImage, NativeImage} from "electron";
@@ -33,8 +33,6 @@ import {isArrayEqual, isBrowser, isMobile} from "../../util/functions";
 import * as dayjs from "dayjs";
 import {insertEmptyBlock} from "../../block/util";
 import {matchHotKey} from "../util/hotKey";
-import {unicode2Emoji} from "../../emoji";
-import {escapeHtml} from "../../util/escape";
 import {hideElements} from "../ui/hideElements";
 import {renderAssetsPreview} from "../../asset/renderAssets";
 import {electronUndo} from "../undo";
@@ -597,7 +595,13 @@ export class Toolbar {
                 // 数学公式后面处理
             } else {
                 if (newNodes[0].firstChild) {
-                    this.range.setStart(newNodes[0].firstChild, 0);
+                    if (newNodes[0].firstChild.textContent === Constants.ZWSP) {
+                        // 新建元素时光标消失 https://github.com/siyuan-note/siyuan/issues/6481
+                        // 新建元素粘贴后元素消失 https://ld246.com/article/1665556907936
+                        this.range.setStart(newNodes[0].firstChild, 1);
+                    } else {
+                        this.range.setStart(newNodes[0].firstChild, 0);
+                    }
                 } else if (newNodes[0].nodeType === 3) {
                     this.range.setStart(newNodes[0], 0);
                 } else {
@@ -629,7 +633,8 @@ export class Toolbar {
                 if (lastNewNode.lastChild) {
                     if (lastNewNode.lastChild.textContent === Constants.ZWSP) {
                         // 新建元素时光标消失 https://github.com/siyuan-note/siyuan/issues/6481
-                        this.range.collapse();
+                        // 新建元素粘贴后元素消失 https://ld246.com/article/1665556907936
+                        this.range.collapse(true);
                     } else {
                         this.range.setEnd(lastNewNode.lastChild, lastNewNode.lastChild.textContent.length);
                     }
@@ -1485,77 +1490,6 @@ export class Toolbar {
                 hintRenderAssets(listItemElement.getAttribute("data-value"), protyle);
             });
             const rangePosition = getSelectionPosition(nodeElement, range);
-            this.subElement.classList.remove("fn__none");
-            this.subElementCloseCB = undefined;
-            setPosition(this.subElement, rangePosition.left, rangePosition.top + 18, Constants.SIZE_TOOLBAR_HEIGHT);
-            this.element.classList.add("fn__none");
-            inputElement.select();
-        });
-    }
-
-    public showFile(protyle: IProtyle, nodeElements: Element[], range: Range) {
-        this.range = range;
-        fetchPost("/api/filetree/searchDocs", {
-            k: "",
-        }, (response) => {
-            let html = "";
-            response.data.forEach((item: { boxIcon: string, box: string, hPath: string, path: string }) => {
-                if (item.path === "/") {
-                    return;
-                }
-                html += `<div class="b3-list-item${html === "" ? " b3-list-item--focus" : ""}" data-path="${item.path}" data-box="${item.box}">
-    ${item.boxIcon ? ('<span class="b3-list-item__icon">' + unicode2Emoji(item.boxIcon) + "</span>") : ""}
-    <span class="b3-list-item__text">${escapeHtml(item.hPath)}</span>
-</div>`;
-            });
-            this.subElement.style.width = "";
-            this.subElement.style.padding = "";
-            this.subElement.innerHTML = `<div class="fn__flex-column" style="max-height:50vh"><input style="margin: 4px 8px 8px 8px" class="b3-text-field"/>
-<div class="b3-list fn__flex-1 b3-list--background" style="position: relative">${html}</div>
-</div>`;
-
-            const inputElement = this.subElement.querySelector("input");
-            inputElement.addEventListener("keydown", (event: KeyboardEvent) => {
-                event.stopPropagation();
-                if (event.isComposing) {
-                    return;
-                }
-                upDownHint(this.subElement.lastElementChild.lastElementChild as HTMLElement, event);
-                if (event.key === "Enter") {
-                    hintMoveBlock(this.subElement.querySelector(".b3-list-item--focus").getAttribute("data-path"), nodeElements, protyle);
-                    event.preventDefault();
-                } else if (event.key === "Escape") {
-                    this.subElement.classList.add("fn__none");
-                    focusByRange(this.range);
-                }
-            });
-            inputElement.addEventListener("input", (event) => {
-                event.stopPropagation();
-                fetchPost("/api/filetree/searchDocs", {
-                    k: inputElement.value,
-                }, (response) => {
-                    let searchHTML = "";
-                    response.data.forEach((item: { boxIcon: string, box: string, hPath: string, path: string }) => {
-                        if (item.path === "/") {
-                            return;
-                        }
-                        searchHTML += `<div class="b3-list-item${searchHTML === "" ? " b3-list-item--focus" : ""}" data-path="${item.path}" data-box="${item.box}">
-    ${item.boxIcon ? ('<span class="b3-list-item__icon">' + unicode2Emoji(item.boxIcon) + "</span>") : ""}
-    <span class="b3-list-item__text">${escapeHtml(item.hPath)}</span>
-</div>`;
-                    });
-                    this.subElement.firstElementChild.lastElementChild.innerHTML = searchHTML;
-                });
-            });
-            this.subElement.lastElementChild.addEventListener("click", (event) => {
-                const target = event.target as HTMLElement;
-                const listElement = hasClosestByClassName(target, "b3-list-item");
-                if (!listElement) {
-                    return;
-                }
-                hintMoveBlock(listElement.getAttribute("data-path"), nodeElements, protyle);
-            });
-            const rangePosition = getSelectionPosition(nodeElements[0], range);
             this.subElement.classList.remove("fn__none");
             this.subElementCloseCB = undefined;
             setPosition(this.subElement, rangePosition.left, rangePosition.top + 18, Constants.SIZE_TOOLBAR_HEIGHT);
