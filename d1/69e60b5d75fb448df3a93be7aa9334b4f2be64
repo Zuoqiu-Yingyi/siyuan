@@ -1,0 +1,19 @@
+kernel/plugin/api_client.go
+  s_f1e3240d2dfd3f::t_d8f966834508d8 505-506,508
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.33-trip",
+  "base_commit_sha": "d169e60b5d75fb448df3a93be7aa9334b4f2be64",
+  "prompts": {},
+  "sessions": {
+    "s_f1e3240d2dfd3f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5f5d-57ad-7fd3-8929-ecc9558a759c",
+        "model": "ADA-Codex/default"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
