@@ -1,0 +1,19 @@
+app/src/layout/util.ts
+  s_a36fa4f97a00c7::t_e9932a4ac2e652 915,985
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.35-trip",
+  "base_commit_sha": "b587366e6df2db05a1180d0cfac221ba5d7abbb5",
+  "prompts": {},
+  "sessions": {
+    "s_a36fa4f97a00c7": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f8aa3-c41a-7bf1-94b2-14e2ca2be076",
+        "model": "gpt-5.5-2026-04-24"
+      },
+      "human_author": "Yuliang Lu <yulianglu@trip.com>"
+    }
+  }
+}
