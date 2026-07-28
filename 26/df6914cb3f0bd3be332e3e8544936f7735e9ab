@@ -1,0 +1,26 @@
+docs/API.zh-CN.md
+  s_18d5ec17e772c2::t_cdd1855d63837f 1546,1606,1629
+  s_18d5ec17e772c2::t_3c82f239a67c8a 1607
+docs/API.md
+  s_18d5ec17e772c2::t_cdd1855d63837f 1554,1614,1637
+  s_18d5ec17e772c2::t_3c82f239a67c8a 1615
+docs/API.ja.md
+  s_18d5ec17e772c2::t_cdd1855d63837f 1546,1606,1629
+  s_18d5ec17e772c2::t_3c82f239a67c8a 1607
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.38-trip",
+  "base_commit_sha": "26df6914cb3f0bd3be332e3e8544936f7735e9ab",
+  "prompts": {},
+  "sessions": {
+    "s_18d5ec17e772c2": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fa89c-37d7-7181-aee0-2b2de717273f",
+        "model": "gpt-5.5-2026-04-24"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
