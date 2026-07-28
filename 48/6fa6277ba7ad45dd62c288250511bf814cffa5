@@ -1,0 +1,32 @@
+docs/API.md
+  s_18d5ec17e772c2::t_21bf2aa7abee02 1526-1527,1542,1544,1553-1554,1556,1558,1586,1591-1592,1600-1638
+  s_18d5ec17e772c2::t_8e0e7a0029b2cc 100
+  s_18d5ec17e772c2::t_0343803782bd00 83-86
+  s_18d5ec17e772c2::t_e84013a46e2706 99,1564
+docs/API.ja.md
+  s_18d5ec17e772c2::t_e84013a46e2706 99
+  s_18d5ec17e772c2::t_527795accbb406 1518-1519,1534,1536,1545-1546,1548,1550,1578,1583-1584,1592-1630
+  s_18d5ec17e772c2::t_8e0e7a0029b2cc 100
+  s_18d5ec17e772c2::t_0343803782bd00 83-86
+docs/API.zh-CN.md
+  s_18d5ec17e772c2::t_7747daf1b17014 1518-1519,1534,1536,1542,1545-1548,1550,1578,1583,1592-1630
+  s_18d5ec17e772c2::t_8e0e7a0029b2cc 100
+  s_18d5ec17e772c2::t_0343803782bd00 83-86
+  s_18d5ec17e772c2::t_e84013a46e2706 99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.38-trip",
+  "base_commit_sha": "486fa6277ba7ad45dd62c288250511bf814cffa5",
+  "prompts": {},
+  "sessions": {
+    "s_18d5ec17e772c2": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fa89c-37d7-7181-aee0-2b2de717273f",
+        "model": "gpt-5.5-2026-04-24"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
