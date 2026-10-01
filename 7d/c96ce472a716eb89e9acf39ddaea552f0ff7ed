@@ -1,0 +1,21 @@
+kernel/plugin/crypto_binding.go
+  s_a3303d6751b0c3::t_e1ff87a6057c7a 107,109
+kernel/plugin/api_crypto_asymmetric_test.go
+  s_a3303d6751b0c3::t_24cb3cb989a981 76-96
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "7dc96ce472a716eb89e9acf39ddaea552f0ff7ed",
+  "prompts": {},
+  "sessions": {
+    "s_a3303d6751b0c3": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_zz8zi6dlfn0o",
+        "model": "kr-claude-opus-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
