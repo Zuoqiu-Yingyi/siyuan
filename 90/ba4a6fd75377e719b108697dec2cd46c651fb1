@@ -1,0 +1,27 @@
+kernel/plugin/crypto/x509.go
+  s_a3303d6751b0c3::t_9b227b497e7f96 136-137,147,154,160,170,180,186
+  s_a3303d6751b0c3::t_35f6471d7376ae 211-212,220,223,228-230
+  s_a3303d6751b0c3::t_7514f3a58abd98 33,42
+  s_a3303d6751b0c3::t_27a00410e58e7c 72-73,84,87,90
+  s_a3303d6751b0c3::t_be1f02348424a2 98-99,105-110,115-116,119-120,128-129
+kernel/plugin/crypto/ec.go
+  s_a3303d6751b0c3::t_7514f3a58abd98 211
+kernel/plugin/crypto/jwk.go
+  s_a3303d6751b0c3::t_647267b5d44474 194-195,200
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "90ba4a6fd75377e719b108697dec2cd46c651fb1",
+  "prompts": {},
+  "sessions": {
+    "s_a3303d6751b0c3": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_zz8zi6dlfn0o",
+        "model": "kr-claude-opus-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
