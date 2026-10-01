@@ -1,0 +1,38 @@
+kernel/plugin/api_crypto_keys.go
+  s_a3303d6751b0c3::t_4517b0df428774 1-265
+kernel/plugin/crypto/digest.go
+  s_a3303d6751b0c3::t_d95e3f0b2b5149 43
+kernel/plugin/api_crypto_test.go
+  s_a3303d6751b0c3::t_fe95ad28a4a69e 21,167,174
+  s_a3303d6751b0c3::t_efd4861afb4dba 1-20,22-68,79-166,168-173,175-556,604-620
+  s_a3303d6751b0c3::t_e36ac7a18d5f3d 69-78
+  s_a3303d6751b0c3::t_eea0401d38775d 557-603
+kernel/plugin/api_crypto.go
+  s_a3303d6751b0c3::t_47cf44ccc8b828 1-302
+kernel/plugin/sandbox.go
+  s_a3303d6751b0c3::t_4106105c8dd83e 116
+kernel/plugin/crypto_binding.go
+  s_a3303d6751b0c3::t_e843faa28fba15 1-19,21-46,48,52-218,220-236
+  s_a3303d6751b0c3::t_8ab76935f33b75 219
+  s_a3303d6751b0c3::t_6cb1cafb4700b8 47,49-51
+kernel/plugin/crypto/algorithm.go
+  s_a3303d6751b0c3::t_0373440c3fda65 51-52
+kernel/plugin/crypto_params.go
+  s_a3303d6751b0c3::t_2d0f63220e67fb 1-175
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "d6f26f685e20c749c8085b1661d6808fe64f0d7b",
+  "prompts": {},
+  "sessions": {
+    "s_a3303d6751b0c3": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_zz8zi6dlfn0o",
+        "model": "kr-claude-opus-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
