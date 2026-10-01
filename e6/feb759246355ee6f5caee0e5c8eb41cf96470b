@@ -1,0 +1,59 @@
+kernel/plugin/crypto/crypto_test.go
+  s_a3303d6751b0c3::t_bcfa85804d41dc 1-244
+kernel/plugin/crypto/algorithm.go
+  s_a3303d6751b0c3::t_a20a33978e7753 41
+  s_a3303d6751b0c3::t_90f0b6a193db5a 1-40,42-125
+kernel/plugin/crypto/digest.go
+  s_a3303d6751b0c3::t_d6bb7e47a04108 1-73
+kernel/plugin/crypto/key.go
+  s_a3303d6751b0c3::t_dbc949c65a7832 63-65,75
+  s_a3303d6751b0c3::t_bf21e98af7460d 1-62,66-74,76-82,84,86-115
+  s_a3303d6751b0c3::t_05293a22db6d73 83,85
+kernel/plugin/crypto/aes_test.go
+  s_a3303d6751b0c3::t_efb4e9f2101087 1-308
+kernel/plugin/crypto/kdf.go
+  s_a3303d6751b0c3::t_4262e7b2b106b0 37
+  s_a3303d6751b0c3::t_1c19cf2e6e77ef 20
+  s_a3303d6751b0c3::t_a6ff3650ba5ee2 1-19,21-36,38-104
+kernel/plugin/crypto/subtle.go
+  s_a3303d6751b0c3::t_09d61fccd96e71 171-172
+  s_a3303d6751b0c3::t_ef2d9ed17e59be 19-20
+  s_a3303d6751b0c3::t_c4feed7a7ed54f 1-18,21-170,173-296
+kernel/plugin/crypto/hmac.go
+  s_a3303d6751b0c3::t_ec73b23920121d 20
+  s_a3303d6751b0c3::t_ccd1306cc52ae3 81
+  s_a3303d6751b0c3::t_bdf3b494c48f69 1-19,21-80,82-107
+kernel/plugin/crypto/key_test.go
+  s_a3303d6751b0c3::t_f0db8a413456e4 1-178,205-334
+  s_a3303d6751b0c3::t_c6630c5feaae07 179-204
+kernel/plugin/crypto/errors.go
+  s_a3303d6751b0c3::t_ab77e11fb20302 1-72
+kernel/plugin/crypto/jwk.go
+  s_a3303d6751b0c3::t_8e945c4f628869 192
+  s_a3303d6751b0c3::t_43da15afa6caa0 75
+  s_a3303d6751b0c3::t_256a93fd139109 106
+  s_a3303d6751b0c3::t_20e133d68adac0 22,25,28-29,53,57-73,76,85,100,117,135,167,173,175,180-186,189-191,193-201,203,205,207,209,211,213,216
+  s_a3303d6751b0c3::t_9da696b17ca971 26
+  s_a3303d6751b0c3::t_d82b79b451734f 1-21,23-24,27,30-52,54-56,74,77-84,86-99,101-105,107-116,118-134,136-166,168-172,174,176-179,187-188,202,204,206,208,210,212,214-215,217-218
+kernel/plugin/crypto/aes.go
+  s_a3303d6751b0c3::t_4a3ba17b8cbef3 77
+  s_a3303d6751b0c3::t_951c066ad2b472 20
+  s_a3303d6751b0c3::t_cd43825cd9e032 1-19,21-76,78-263,269-284
+  s_a3303d6751b0c3::t_e174ad3085318c 264-268
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "e6feb759246355ee6f5caee0e5c8eb41cf96470b",
+  "prompts": {},
+  "sessions": {
+    "s_a3303d6751b0c3": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_zz8zi6dlfn0o",
+        "model": "kr-claude-opus-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
