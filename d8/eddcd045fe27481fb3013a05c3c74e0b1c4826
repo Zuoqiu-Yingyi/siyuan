@@ -1,0 +1,105 @@
+kernel/plugin/crypto/subtle.go
+  s_a3303d6751b0c3::t_094e556c5bdc5e 201
+  s_a3303d6751b0c3::t_925bf21f74f39e 325
+  s_a3303d6751b0c3::t_5c37ab0ecd0c22 81,101
+  s_a3303d6751b0c3::t_bd719c64200a88 189-192
+  s_a3303d6751b0c3::t_ebba611c64b9bb 373-375
+  s_a3303d6751b0c3::t_bd2867df6d65f8 130-151,157-175
+  s_a3303d6751b0c3::t_22d532637054e5 240-243
+  s_a3303d6751b0c3::t_21ebf6f0f9ddfc 247,250-255,265-276
+  s_a3303d6751b0c3::t_93ebb63b74736f 98-100,102-103
+  s_a3303d6751b0c3::t_f2ef71d74a419e 62-63
+  s_a3303d6751b0c3::t_e79fc9dcbbfea7 112
+  s_a3303d6751b0c3::t_77c9f3846913a8 297-298
+  s_a3303d6751b0c3::t_ea63c9211de63f 386-392
+  s_a3303d6751b0c3::t_645027ffe2377c 78-80,82-83
+  s_a3303d6751b0c3::t_a026555eb84529 180-183
+  s_a3303d6751b0c3::t_a5d4ce217eeb90 216-221
+  s_a3303d6751b0c3::t_3dd89eb3bc5ec9 46-47
+kernel/plugin/crypto_params.go
+  s_a3303d6751b0c3::t_6175079a000468 58-64,74-75
+  s_a3303d6751b0c3::t_9c4bdd98c37cf6 84-91,99-100
+kernel/plugin/crypto/format_test.go
+  s_a3303d6751b0c3::t_5782ed5a4b91b5 1-397
+kernel/plugin/crypto/jwk.go
+  s_a3303d6751b0c3::t_7ce29b4dfd1ebf 375-413,417,425,428-432,435,437,439,441-452,456-458
+  s_a3303d6751b0c3::t_6e1aedd0e9cdc5 22,24
+  s_a3303d6751b0c3::t_63421bb7ffbd52 215,218-228,232-251,253-299
+  s_a3303d6751b0c3::t_700f7a5ecbd079 460-476
+  s_a3303d6751b0c3::t_82e7df77ba34dc 112-115,121-204
+  s_a3303d6751b0c3::t_36a9599d88d7ff 56-59
+  s_a3303d6751b0c3::t_f6c1e24db57a3e 20-21,23,28-29
+  s_a3303d6751b0c3::t_c178474191d181 33-42
+  s_a3303d6751b0c3::t_891cdeb04f420d 68
+kernel/plugin/crypto/ec.go
+  s_a3303d6751b0c3::t_beb1e79f3fe44e 104-105,114
+  s_a3303d6751b0c3::t_4055a948ba2528 1-19,21-22,24-73,75-103,106-113,115-133,135-142,144-158,214-255
+  s_a3303d6751b0c3::t_c286f7fcbb13e0 134,143
+  s_a3303d6751b0c3::t_8efc1a66f6ee9e 181-210,212-213
+  s_a3303d6751b0c3::t_d275dd1b7f7134 74
+  s_a3303d6751b0c3::t_d0bee3a4c60fcb 20,23
+  s_a3303d6751b0c3::t_142799d82ea6ad 159-180
+  s_a3303d6751b0c3::t_2ed9ad89af1085 211
+kernel/plugin/crypto/testdata/generate_fixtures.mjs
+  s_a3303d6751b0c3::t_89e67b16339f71 1-28,31-176
+  s_a3303d6751b0c3::t_f6d6f8b8c902ac 29-30
+kernel/plugin/crypto/x509.go
+  s_a3303d6751b0c3::t_d3214e0a74009e 1-82,85-97,99-124,126-230
+  s_a3303d6751b0c3::t_5a281f3c70c246 98
+  s_a3303d6751b0c3::t_c96a5aa882b800 125
+  s_a3303d6751b0c3::t_12f0b39c3e3e10 83-84
+kernel/plugin/crypto/key.go
+  s_a3303d6751b0c3::t_797f8dc7a6feef 66-69,79-81
+  s_a3303d6751b0c3::t_a6f47214804e05 121-131
+  s_a3303d6751b0c3::t_4974ef216108c9 89,91-93
+kernel/plugin/api_crypto_keys.go
+  s_a3303d6751b0c3::t_50e5154ecaddfd 249-250,255-275
+kernel/plugin/crypto/aeskw.go
+  s_a3303d6751b0c3::t_d0de66eb8cccea 1-70
+kernel/plugin/crypto/asymmetric_test.go
+  s_a3303d6751b0c3::t_7b50cd512ab56b 388-390
+  s_a3303d6751b0c3::t_1695d661b734fc 1-387,391-456
+kernel/plugin/crypto/rsa.go
+  s_a3303d6751b0c3::t_25bc7c96ccc948 28-30,105,120
+  s_a3303d6751b0c3::t_16703d1ed1f7f9 86-90
+  s_a3303d6751b0c3::t_ef91f91536a59a 1-27,31-85,91-104,106-119,121-255
+kernel/plugin/crypto_binding.go
+  s_a3303d6751b0c3::t_a9b0c2f9c037da 182-201
+  s_a3303d6751b0c3::t_1e476f4e9adf28 36
+  s_a3303d6751b0c3::t_eddebdc08f3852 93-101,106-108
+kernel/plugin/api_crypto_asymmetric_test.go
+  s_a3303d6751b0c3::t_49392d70cf894c 1-479
+kernel/plugin/crypto/testdata/interop.json
+  s_a3303d6751b0c3::t_c6af9ba539ca82 1-16,19-25,27-35,37,44,46-60,63-69,71-79,81,88,90-101,103,106-111,114-121,124,126,128-139,141,144-149,152-159,162,164,166-177,179,182-187,190-197,200,202,204-215,218-224,226-234,237-238,240-244,249-254,259-421,424,426-431,434,436-441,444,446-448
+  s_a3303d6751b0c3::t_8f23ea73b03606 17-18,26,36,38-43,45,61-62,70,80,82-87,89,102,104-105,112-113,122-123,125,127,140,142-143,150-151,160-161,163,165,178,180-181,188-189,198-199,201,203,216-217,225,235-236,239,245-248,255-258,422-423,425,432-433,435,442-443,445
+kernel/plugin/crypto/algorithm.go
+  s_a3303d6751b0c3::t_a633aa5813a5e9 31,36-43
+  s_a3303d6751b0c3::t_2e576381ba31c2 104,107-120
+  s_a3303d6751b0c3::t_4ced5dd1bfe652 50,52
+  s_a3303d6751b0c3::t_2f5b0ad353df64 83-84,88-94
+  s_a3303d6751b0c3::t_693bbfc2bc02d2 123-157
+kernel/plugin/crypto/okp.go
+  s_a3303d6751b0c3::t_2ad14a8374d435 1-19,21-100,102-126
+  s_a3303d6751b0c3::t_70cc7d0f3dc568 20,101
+kernel/plugin/crypto/interop_test.go
+  s_a3303d6751b0c3::t_cb3231ddbc0f82 1-29,32-158,164,167-169,172-194,196-202,204-424
+  s_a3303d6751b0c3::t_fdf76ae5f6c5ed 30-31
+  s_a3303d6751b0c3::t_ba5777922e6255 159-163,165-166,170-171
+  s_a3303d6751b0c3::t_ad2ebed39956de 195,203
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "d8eddcd045fe27481fb3013a05c3c74e0b1c4826",
+  "prompts": {},
+  "sessions": {
+    "s_a3303d6751b0c3": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_zz8zi6dlfn0o",
+        "model": "kr-claude-opus-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
