@@ -1,0 +1,22 @@
+kernel/plugin/crypto/jwk.go
+  s_a3303d6751b0c3::t_8298945c0b0974 202
+  s_a3303d6751b0c3::t_62b61b5ac00297 200-201,203-230
+kernel/plugin/crypto/format_test.go
+  s_a3303d6751b0c3::t_96441fc42026d0 21,351-413
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "af2d05b50849505130b86fc60529c13f406fe367",
+  "prompts": {},
+  "sessions": {
+    "s_a3303d6751b0c3": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_zz8zi6dlfn0o",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
