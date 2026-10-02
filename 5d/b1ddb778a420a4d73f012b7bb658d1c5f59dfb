@@ -1,0 +1,30 @@
+kernel/plugin/sandbox.go
+  s_f5bc298e35c13d::t_535c0e455db6ec 53-57
+kernel/plugin/api_client.go
+  s_f5bc298e35c13d::t_9bc2585c1e9d0a 810
+  s_f5bc298e35c13d::t_bc323d6d5e70cc 25,30,60,96-101,129-138,140,152,156-158,807-809,811-826
+kernel/plugin/api_client_test.go
+  s_f5bc298e35c13d::t_587fe3aca02ca3 156-167,178-205
+  s_f5bc298e35c13d::t_800135ddf6cc4e 206-241,243-255
+  s_f5bc298e35c13d::t_d847c285785b3a 256-281,283-300
+  s_f5bc298e35c13d::t_514181dd258994 45-49
+  s_f5bc298e35c13d::t_acc0ceb0903ada 22,24,28,40-44
+  s_f5bc298e35c13d::t_14ceede0106223 60,68-73,76,90,96-104
+  s_f5bc298e35c13d::t_80201b22dc2691 105-155
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "5db1ddb778a420a4d73f012b7bb658d1c5f59dfb",
+  "prompts": {},
+  "sessions": {
+    "s_f5bc298e35c13d": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_nb44s8bee5rs",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
