@@ -1,0 +1,68 @@
+kernel/plugin/crypto/legacy_test.go
+  s_a3303d6751b0c3::t_f32f796619a891 1-22,24-366,368-428
+  s_a3303d6751b0c3::t_f336efcfa90294 23
+  s_a3303d6751b0c3::t_2a76a99e0faf2e 367
+kernel/plugin/crypto/x509.go
+  s_a3303d6751b0c3::t_4b1d0c01cb70e0 76
+kernel/plugin/crypto/digest.go
+  s_a3303d6751b0c3::t_ea95f9ecc8427b 21,30-33,41-42
+  s_a3303d6751b0c3::t_46927021494c34 59-61,69-76,81
+  s_a3303d6751b0c3::t_22bcd1e860f97e 77-80
+kernel/plugin/crypto/subtle.go
+  s_a3303d6751b0c3::t_d31f9d6698e7c8 116
+  s_a3303d6751b0c3::t_dbfa04cfa19d7d 251
+  s_a3303d6751b0c3::t_cdc5ce311c5a07 46-47
+  s_a3303d6751b0c3::t_16b8d890eef068 205
+  s_a3303d6751b0c3::t_d6409f15e61a96 64-65
+  s_a3303d6751b0c3::t_689aa10ddfaae5 329
+kernel/plugin/crypto/aes.go
+  s_a3303d6751b0c3::t_fccad71289f88f 305
+  s_a3303d6751b0c3::t_7cc7596a52afe7 293
+  s_a3303d6751b0c3::t_19e257f532840a 175-207
+  s_a3303d6751b0c3::t_b9da54f73eb3e4 165
+kernel/plugin/crypto/rsa.go
+  s_a3303d6751b0c3::t_5022f10c4adc06 35
+kernel/plugin/crypto/testdata/interop.json
+  s_a3303d6751b0c3::t_c0f235b8e57227 446-481
+kernel/plugin/api_crypto_legacy_test.go
+  s_a3303d6751b0c3::t_a204a5f5c6855d 63
+  s_a3303d6751b0c3::t_072f9993af9195 1-62,64-307
+kernel/plugin/crypto/aes_test.go
+  s_a3303d6751b0c3::t_a049461c6ae73a 192
+  s_a3303d6751b0c3::t_f02389e785cf12 202
+kernel/plugin/crypto/interop_test.go
+  s_a3303d6751b0c3::t_80d1001f338744 144-149,157-158
+  s_a3303d6751b0c3::t_176d0d538b767e 48-49
+  s_a3303d6751b0c3::t_ebb16f0bc3ba85 434-498
+kernel/plugin/crypto/algorithm.go
+  s_a3303d6751b0c3::t_13aec7c96b1f95 65
+  s_a3303d6751b0c3::t_189a7fede0bef4 121-124
+  s_a3303d6751b0c3::t_a14eaaf1575dc1 146
+  s_a3303d6751b0c3::t_2fcd22eaa6b742 46-57
+kernel/plugin/crypto/jwk.go
+  s_a3303d6751b0c3::t_5916c1668e86db 455-458
+  s_a3303d6751b0c3::t_32e49a2095748c 211
+  s_a3303d6751b0c3::t_cbca42129c901a 94
+kernel/plugin/crypto/ec.go
+  s_a3303d6751b0c3::t_0a895cf3e38c57 114
+  s_a3303d6751b0c3::t_d7b46dbc7a4c1b 143
+kernel/plugin/crypto/testdata/generate_fixtures.mjs
+  s_a3303d6751b0c3::t_e0b954bf5af24f 176-216
+  s_a3303d6751b0c3::t_c5c2dcfc7cd559 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "642f1ac98c843147d97d482ab6024c95f679c4c4",
+  "prompts": {},
+  "sessions": {
+    "s_a3303d6751b0c3": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_zz8zi6dlfn0o",
+        "model": "kr-claude-opus-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
