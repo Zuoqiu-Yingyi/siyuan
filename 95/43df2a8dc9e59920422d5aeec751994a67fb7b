@@ -1,0 +1,24 @@
+kernel/plugin/crypto/aes.go
+  s_a3303d6751b0c3::t_064abeea901626 62-63
+kernel/plugin/crypto/key_test.go
+  s_a3303d6751b0c3::t_ad4f385e004eb2 135-147
+kernel/plugin/api_crypto_test.go
+  s_a3303d6751b0c3::t_39a737bc18e67c 280-285,287-292
+  s_a3303d6751b0c3::t_45f8e6fcd7fec0 270-279,286,293-298
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "9543df2a8dc9e59920422d5aeec751994a67fb7b",
+  "prompts": {},
+  "sessions": {
+    "s_a3303d6751b0c3": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_zz8zi6dlfn0o",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
