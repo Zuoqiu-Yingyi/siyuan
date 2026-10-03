@@ -1,0 +1,48 @@
+kernel/plugin/encoding/LICENSE
+  s_612b1e3a337e6d::t_e72225a5820fb4 1-201
+kernel/plugin/encoding/text_encoder.go
+  s_612b1e3a337e6d::t_e72225a5820fb4 1-48
+kernel/plugin/encoding/doc.go
+  s_612b1e3a337e6d::t_e72225a5820fb4 1-55
+kernel/plugin/encoding/text_decoder.go
+  s_612b1e3a337e6d::t_e72225a5820fb4 1-532
+kernel/plugin/encoding/module.go
+  s_612b1e3a337e6d::t_631ac372591726 1-27
+kernel/plugin/sandbox_test.go
+  s_612b1e3a337e6d::t_7771cc76c552a6 26-61
+  s_612b1e3a337e6d::t_c34b80c046b8b3 1-25
+kernel/plugin/encoding/error.go
+  s_612b1e3a337e6d::t_e72225a5820fb4 1-72
+kernel/plugin/encoding/types.go
+  s_612b1e3a337e6d::t_e72225a5820fb4 1-20
+kernel/plugin/encoding/module_test.go
+  s_612b1e3a337e6d::t_ca92607bb2f172 3-4,14
+  s_612b1e3a337e6d::t_601c6c91a79935 1-2,5-13,15-116
+kernel/plugin/encoding/goja.go
+  s_612b1e3a337e6d::t_e72225a5820fb4 1-13,15-219
+  s_612b1e3a337e6d::t_21f7912496b063 14
+kernel/plugin/sandbox.go
+  s_612b1e3a337e6d::t_ad430f2c7daa92 33
+kernel/plugin/encoding/text_decoder_test.go
+  s_612b1e3a337e6d::t_b03335a9d387f5 1-288
+kernel/plugin/encoding/test_setup_test.go
+  s_612b1e3a337e6d::t_601c6c91a79935 1-51
+kernel/plugin/api_crypto_test.go
+  s_612b1e3a337e6d::t_bb52f8246f1c32 69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "9e84b58ad564d285386b2e86b9c53d51561c9868",
+  "prompts": {},
+  "sessions": {
+    "s_612b1e3a337e6d": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_bqu9k3g4ovsv",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
