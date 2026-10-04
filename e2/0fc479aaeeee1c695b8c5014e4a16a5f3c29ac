@@ -1,0 +1,22 @@
+kernel/plugin/api_client_test.go
+  s_612b1e3a337e6d::t_e57da093563225 77-79
+  s_612b1e3a337e6d::t_bbe4090a34a8c1 236-335
+kernel/plugin/api_client.go
+  s_612b1e3a337e6d::t_0b2923eb08956e 61,103-108,119-146,148-149,151-152,156,159-160,162-171,190-193
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "e20fc479aaeeee1c695b8c5014e4a16a5f3c29ac",
+  "prompts": {},
+  "sessions": {
+    "s_612b1e3a337e6d": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_bqu9k3g4ovsv",
+        "model": "auto(free)"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
