@@ -1,0 +1,47 @@
+kernel/plugin/plugin.go
+  s_612b1e3a337e6d::t_596541cbb28823 42
+  s_612b1e3a337e6d::t_3117280b1bec65 108
+  s_612b1e3a337e6d::t_09552042e02f02 966-968,970,987-994
+  s_612b1e3a337e6d::t_23a62c0fca1d6a 1024-1026
+kernel/apicontract/plugin_service_protocol.go
+  s_612b1e3a337e6d::t_761f74ba18120e 35
+  s_612b1e3a337e6d::t_6109f9d4b52cb3 78
+kernel/apicontract/schema.json
+  s_612b1e3a337e6d::t_f06a5c9b07e272 30885-30894,31076,31115-31134,31245,112805-112813,113306-113314,115089-115097,115939-115947,116440-116448,116941-116949,168063-168071,168564-168572,169065-169066
+app/src/types/api/index.d.ts
+  s_612b1e3a337e6d::t_f06a5c9b07e272 1379,1381,2565,5889
+kernel/apicontract/plugin_service_protocol_test.go
+  s_612b1e3a337e6d::t_79b19195bfff40 54-55
+  s_612b1e3a337e6d::t_fb957a5fe1daf6 26
+kernel/plugin/service_contract.go
+  s_612b1e3a337e6d::t_2c9ef46bc7e533 147-148
+  s_612b1e3a337e6d::t_8712f2bc6fb6ae 79,82
+kernel/plugin/service_contract_test.go
+  s_612b1e3a337e6d::t_933eb5a1ed7f27 22
+  s_612b1e3a337e6d::t_a276baceeb164b 55-56
+  s_612b1e3a337e6d::t_bd8d860fb9ff4c 300-383
+  s_612b1e3a337e6d::t_544b7739421b0e 102,183,224,403
+kernel/plugin/server.go
+  s_612b1e3a337e6d::t_87bcd996c22529 312-332,336-358,360-402
+  s_612b1e3a337e6d::t_a59dc954ff9439 333-335,359
+  s_612b1e3a337e6d::t_d88533b71b0b09 191
+  s_612b1e3a337e6d::t_fd549ed1a3f37a 20
+  s_612b1e3a337e6d::t_3ad86815dc961a 187-190,192-193
+  s_612b1e3a337e6d::t_7015a0eff4282e 154
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "ffd56d9d7864a275d6c009a9b97ce15433b4081b",
+  "prompts": {},
+  "sessions": {
+    "s_612b1e3a337e6d": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_bqu9k3g4ovsv",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
