@@ -1,0 +1,25 @@
+kernel/plugin/api_storage_test.go
+  s_612b1e3a337e6d::t_10988a8f1c25f7 27,30,48,50
+  s_612b1e3a337e6d::t_8eae644ac91869 1-26,28-29,31-47,49,51-52
+kernel/plugin/api_storage.go
+  s_612b1e3a337e6d::t_bc7a914dedf0d8 184
+kernel/plugin/sandbox_test.go
+  s_612b1e3a337e6d::t_e7727e53b8e7f2 220-241
+  s_612b1e3a337e6d::t_43b7389048253b 242
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "08d8ba02f512e8737346bc2f49e704bc31f436b7",
+  "prompts": {},
+  "sessions": {
+    "s_612b1e3a337e6d": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_bqu9k3g4ovsv",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
