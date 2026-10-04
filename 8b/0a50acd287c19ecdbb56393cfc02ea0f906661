@@ -1,0 +1,40 @@
+kernel/plugin/sandbox.go
+  s_612b1e3a337e6d::t_2772281b37c8cf 25,108,212-216,223-226,337-388,392-393,395,662-663
+  s_612b1e3a337e6d::t_167d1792b8ac1e 674-675
+kernel/plugin/api_client.go
+  s_612b1e3a337e6d::t_2c0af0f2ec6d1c 229
+kernel/plugin/plugin.go
+  s_612b1e3a337e6d::t_bcdf613954da11 106-107
+kernel/plugin/api_storage_test.go
+  s_612b1e3a337e6d::t_10988a8f1c25f7 49,51
+  s_612b1e3a337e6d::t_8eae644ac91869 45,48
+kernel/plugin/api_storage.go
+  s_612b1e3a337e6d::t_bc7a914dedf0d8 185
+  s_612b1e3a337e6d::t_b4feefa7dc4913 149
+  s_612b1e3a337e6d::t_91ac8f76cbe04e 182
+kernel/plugin/sandbox_test.go
+  s_612b1e3a337e6d::t_e7727e53b8e7f2 20,244-277,279-280,282-285,287-307
+  s_612b1e3a337e6d::t_c4b6c232f60554 278,281,286
+  s_612b1e3a337e6d::t_43b7389048253b 310-360
+kernel/plugin/formdata.go
+  s_612b1e3a337e6d::t_143399b2562b6f 56-57,62-64,67,70-71,74,78,81
+kernel/plugin/api_client_test.go
+  s_612b1e3a337e6d::t_4eccb55cebb899 80
+  s_612b1e3a337e6d::t_2562d9459ab2ca 323-339
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "8b0a50acd287c19ecdbb56393cfc02ea0f906661",
+  "prompts": {},
+  "sessions": {
+    "s_612b1e3a337e6d": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_bqu9k3g4ovsv",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
