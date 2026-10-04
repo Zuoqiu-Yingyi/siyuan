@@ -1,0 +1,34 @@
+kernel/plugin/abort_bindings.go
+  s_612b1e3a337e6d::t_86c6c628edeff2 27,32-37,75,317,320
+  s_612b1e3a337e6d::t_e588aea38b4234 1-20,22-26,28-31,42-74,76-316,318-319,321-335,337-366
+  s_612b1e3a337e6d::t_6eecc9e0eb13aa 21,38-41,336
+kernel/plugin/sandbox.go
+  s_612b1e3a337e6d::t_db92793e8d3c90 106
+kernel/plugin/abort.go
+  s_612b1e3a337e6d::t_081bb8e0c7989f 66-71
+  s_612b1e3a337e6d::t_f9d0f11b2fbcd1 29-33,42-48,190-193
+  s_612b1e3a337e6d::t_af7325ab57cb2a 21,34-35,187
+  s_612b1e3a337e6d::t_976290701337a3 26
+  s_612b1e3a337e6d::t_959c30c632dd7b 1-20,22-25,27-28,36-41,49-65,72-186,188-189,194-195
+kernel/plugin/abort_test.go
+  s_612b1e3a337e6d::t_ae655c1befbaeb 265
+  s_612b1e3a337e6d::t_b937b073984b58 1-37,39-91,93-264,266-300
+  s_612b1e3a337e6d::t_a3e4ed4a8c6a88 38
+  s_612b1e3a337e6d::t_43c8ac1fc3bb9b 92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "76684df7662415c170e01537251f06960002c271",
+  "prompts": {},
+  "sessions": {
+    "s_612b1e3a337e6d": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_bqu9k3g4ovsv",
+        "model": "auto(free)"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
