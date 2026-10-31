@@ -1,0 +1,25 @@
+kernel/model/cookie_key.go
+  s_2202a666414882::t_d558630b3885b6 1-46,48-53,55-61,66-88
+  s_2202a666414882::t_7d64c6d2fb285c 47,54,62-65
+kernel/model/cookie_key_test.go
+  s_2202a666414882::t_8d381ee399977f 102-120
+  s_2202a666414882::t_4da9ca86152c1f 1-101,121-148
+kernel/model/conf.go
+  s_2202a666414882::t_7c86b8f6512c96 539
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.51-trip",
+  "base_commit_sha": "108e5e8f812853a8e516e40d7d93f23f8b044438",
+  "prompts": {},
+  "sessions": {
+    "s_2202a666414882": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_0043sbvdbzpp",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
