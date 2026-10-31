@@ -1,0 +1,28 @@
+app/tests/localKernelWorkspaceDir.test.js
+  s_2202a666414882::t_8209fc5ee7f3c5 1-41
+app/electron/main.js
+  s_2202a666414882::t_142f8855091a68 1719-1733
+  s_2202a666414882::t_29f2c88ca5d9e2 4374-4379,4384
+kernel/server/serve_auth_test.go
+  s_2202a666414882::t_3b406ba8789d5e 70
+  s_2202a666414882::t_1ef7068e2c704c 71
+  s_2202a666414882::t_301fcf71204e00 63-69,72-92
+  s_2202a666414882::t_5f8cb5191066d4 10-11,16-17,19-20
+  s_2202a666414882::t_c12ea59b85923a 18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.51-trip",
+  "base_commit_sha": "66544242ce54a8d44fe59b377e977b2d550c95c8",
+  "prompts": {},
+  "sessions": {
+    "s_2202a666414882": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_0043sbvdbzpp",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
