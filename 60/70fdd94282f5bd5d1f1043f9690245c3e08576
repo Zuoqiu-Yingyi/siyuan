@@ -1,0 +1,57 @@
+kernel/model/oidc_test.go
+  s_2202a666414882::t_31a3ba201737cc 637
+kernel/api/system_test.go
+  s_2202a666414882::t_3b5c44afe25c98 34,42
+  s_2202a666414882::t_c93bd20c8be3aa 76-77,83-84
+kernel/model/auth_session.go
+  s_2202a666414882::t_f25e19ff7e25c6 34
+  s_2202a666414882::t_f517a4427ac1f9 48-65
+kernel/model/session.go
+  s_2202a666414882::t_449367e077fb21 113
+kernel/util/session.go
+  s_2202a666414882::t_5eeb7184f9485f 143-159,166-167
+  s_2202a666414882::t_88585581b2ea8c 168-170
+  s_2202a666414882::t_5dfd89b93c2eb0 8-9
+kernel/server/serve.go
+  s_2202a666414882::t_0927a2cfca5605 160
+  s_2202a666414882::t_7fdbd4742cbc70 151,153,155
+  s_2202a666414882::t_2d56e224884e6a 152,154
+  s_2202a666414882::t_f11b7c3d83b91c 321-337
+kernel/api/system.go
+  s_2202a666414882::t_37bf48fbb061c2 938
+kernel/server/serve_websocket_test.go
+  s_2202a666414882::t_6dd7cde59d59c9 32,41
+kernel/model/session_test.go
+  s_2202a666414882::t_bea68815eea7ab 184,247,390
+  s_2202a666414882::t_39fb4a4df438b4 198,261
+  s_2202a666414882::t_bbbf06454daddd 482
+  s_2202a666414882::t_6a6c09b8709921 402
+kernel/api/contract_mcp_oauth_test.go
+  s_2202a666414882::t_5c732a2594c8d4 47
+kernel/model/auth_session_test.go
+  s_2202a666414882::t_21ed26f9ab7832 159-191
+  s_2202a666414882::t_5c44f777cc95df 129,134-139,145
+kernel/server/serve_tls_test.go
+  s_2202a666414882::t_bebdf8bd738df7 216
+kernel/model/oidc.go
+  s_2202a666414882::t_3896da602bedb3 926
+kernel/server/serve_session_test.go
+  s_2202a666414882::t_c446c6cfaf6835 1-42,46-132
+  s_2202a666414882::t_88585581b2ea8c 43-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.51-trip",
+  "base_commit_sha": "6070fdd94282f5bd5d1f1043f9690245c3e08576",
+  "prompts": {},
+  "sessions": {
+    "s_2202a666414882": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_0043sbvdbzpp",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
