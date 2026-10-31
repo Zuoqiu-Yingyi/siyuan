@@ -65,6 +65,7 @@ export const openDocumentTitleDialog = (options: {id: string, notebook?: string,
         /// #if MOBILE
         height: "auto",
         containerClassName: "mobile-document-title-sheet",
+        hideCloseIcon: true,
         /// #endif
         content: `<div class="document-title-dialog"></div><div class="b3-dialog__action">
 <button class="b3-button b3-button--text" data-type="confirm">${escapeHtml(window.siyuan.languages.confirm)}</button></div>`,

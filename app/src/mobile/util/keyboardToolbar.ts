@@ -471,7 +471,7 @@ const updateKeyboardPanelHeight = () => {
     toolbarElement.style.height = panelHeight;
     const editor = getCurrentEditor();
     if (editor) {
-        getMobileToolbarPaddingElement(editor.protyle).style.paddingBottom = panelHeight;
+        getMobileToolbarPaddingElement(editor.protyle)?.style.setProperty("padding-bottom", panelHeight);
     }
 };
 
@@ -971,7 +971,7 @@ const hideKeyboardToolbarUtil = (restoreKeyboard = false) => {
     updateKeyboardToolbarPosition();
     const editor = getCurrentEditor();
     if (editor) {
-        getMobileToolbarPaddingElement(editor.protyle).style.paddingBottom = "48px";
+        getMobileToolbarPaddingElement(editor.protyle)?.style.setProperty("padding-bottom", "48px");
     }
     resetKeyboardToolbarUtilButtons();
 };
@@ -1185,7 +1185,7 @@ const showKeyboardToolbarElement = () => {
         keyboardPanelClosing = false;
         hideKeyboardToolbarUtil();
         if (toolbarProtyle) {
-            getMobileToolbarPaddingElement(toolbarProtyle).style.paddingBottom = "";
+            getMobileToolbarPaddingElement(toolbarProtyle)?.style.setProperty("padding-bottom", "");
         }
         toolbarProtyle = protyle;
         updateMobilePluginToolbar(protyle);
@@ -1211,7 +1211,7 @@ const showKeyboardToolbarElement = () => {
     const editor = getCurrentEditor();
     if (editor) {
         if (editor.protyle.wysiwyg.element.contains(range.startContainer)) {
-            getMobileToolbarPaddingElement(editor.protyle).style.paddingBottom = "48px";
+            getMobileToolbarPaddingElement(editor.protyle)?.style.setProperty("padding-bottom", "48px");
         }
         forEachPluginSubscriber("mobile-keyboard-show", eventBus => {
             eventBus.emit("mobile-keyboard-show");
@@ -1347,7 +1347,7 @@ export const hideKeyboardToolbar = (keyboardClosed = true) => {
     toolbarElement.style.height = "";
     const editor = getCurrentEditor();
     if (editor) {
-        getMobileToolbarPaddingElement(editor.protyle).style.paddingBottom = "";
+        getMobileToolbarPaddingElement(editor.protyle)?.style.setProperty("padding-bottom", "");
         if (!toolbarHidden) {
             forEachPluginSubscriber("mobile-keyboard-hide", eventBus => {
                 eventBus.emit("mobile-keyboard-hide");
@@ -1441,7 +1441,7 @@ export const initKeyboardToolbar = () => {
     window.addEventListener("siyuan-mobile-toolbar-focus", renderKeyboardToolbar);
     window.addEventListener("siyuan-mobile-toolbar-editor", (event: CustomEvent<IProtyle>) => {
         if (event.detail) {
-            getMobileToolbarPaddingElement(event.detail).style.paddingBottom = "";
+            getMobileToolbarPaddingElement(event.detail)?.style.setProperty("padding-bottom", "");
             if (toolbarProtyle === event.detail) {
                 toolbarProtyle = undefined;
             }

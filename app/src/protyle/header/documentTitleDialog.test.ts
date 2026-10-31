@@ -83,7 +83,7 @@ const setup = (mobile: boolean) => {
             querySelector: (selector: string) => selector === ".b3-dialog" ? this.viewport :
                 selector === ".document-title-dialog" ? this.host : this.confirm};
         constructor(public options: {beforeClose: () => boolean, destroyCallback: () => void,
-            width?: string, height?: string, containerClassName?: string}) {
+            width?: string, height?: string, containerClassName?: string, hideCloseIcon?: boolean}) {
             window.siyuan.dialogs.push(this);
         }
         destroy() {
@@ -236,6 +236,7 @@ test("mobile title drawer follows keyboard viewport changes and keeps failed dra
     assert.equal(dialog.options.width, "100vw");
     assert.equal(dialog.options.height, "auto");
     assert.equal(dialog.options.containerClassName, "mobile-document-title-sheet");
+    assert.equal(dialog.options.hideCloseIcon, true);
     assert.ok(dialog.classes.has("mobile-document-title-dialog"));
     assert.equal(dialog.viewport.style.height, "800px");
     state.viewport.top = 50;
@@ -284,12 +285,18 @@ test("desktop title editing retains the centered dialog without mobile viewport 
     const dialog = state.open();
     assert.equal(dialog.options.width, "560px");
     assert.equal(dialog.options.height, undefined);
+    assert.equal(dialog.options.hideCloseIcon, undefined);
     assert.equal(dialog.classes.size, 0);
     assert.equal(state.resizeListeners.size, 0);
 });
 
-const checkDrawerLayout = (css: string) => {
+const checkDrawerLayout = (css: string, toolbarSource: string) => {
     const check: typeof assert = require("node:assert/strict");
+    const {paddingElement, setUndo} = new Function(toolbarSource +
+        "\nreturn {paddingElement: getMobileToolbarPaddingElement, setUndo: setMobileToolbarUndo};")() as {
+        paddingElement: typeof import("../lite/mobileToolbar").getMobileToolbarPaddingElement,
+        setUndo: typeof import("../lite/mobileToolbar").setMobileToolbarUndo,
+    };
     document.head.innerHTML = `<style>${css}</style>`;
     document.body.style.cssText = "--b3-font-size:16px;--b3-font-size-editor:16px;--mobile-top-safe-area:0px";
     document.body.innerHTML = `<div class="mobile-document-title-dialog mobile-bottom-sheet-dialog b3-dialog--open">
@@ -307,6 +314,9 @@ const checkDrawerLayout = (css: string) => {
     const host = document.querySelector<HTMLElement>(".document-title-dialog");
     const editable = document.querySelector<HTMLElement>("[contenteditable]");
     const action = document.querySelector<HTMLElement>(".b3-dialog__action");
+    const owner = {element: host, contentElement: host.firstElementChild} as IProtyle;
+    const fragment = {lite: true, element: host.querySelector(".protyle-title__rich")} as IProtyle;
+    setUndo(fragment, owner, () => {});
     for (const height of [800, 350, 220]) {
         container.style.top = "30px";
         container.style.height = `${height}px`;
@@ -331,6 +341,21 @@ const checkDrawerLayout = (css: string) => {
             }
         }
     }
+    editable.textContent = "Short title";
+    for (const theme of ["light", "dark"]) {
+        document.body.style.setProperty("--b3-theme-background", theme === "light" ? "#fff" : "#1e1e1e");
+        document.body.style.setProperty("--b3-theme-surface", theme === "light" ? "#f3f3f3" : "#292929");
+        for (const height of [800, 350, 220]) {
+            container.style.height = `${height}px`;
+            for (const padding of ["48px", "160px", ""]) {
+                paddingElement(fragment)?.style.setProperty("padding-bottom", padding);
+                const gap = sheet.getBoundingClientRect().bottom - action.getBoundingClientRect().bottom;
+                check.ok(gap < 1, `keyboard padding cannot create a gap below Confirm: ${theme}, ${height}, ${padding}, gap=${gap}`);
+                check.equal(getComputedStyle(host).backgroundColor, getComputedStyle(sheet).backgroundColor);
+                check.equal(getComputedStyle(fragment.element).backgroundColor, getComputedStyle(sheet).backgroundColor);
+            }
+        }
+    }
     editable.textContent = "";
     editable.dataset.tip = "Untitled document";
     editable.focus();
@@ -345,14 +370,18 @@ test("native mobile title drawer keeps its action above the keyboard and scrolls
     timeout: 30000,
 }, async () => {
     const css = compile(resolve(__dirname, "../../assets/scss/mobile.scss"), {logger: {warn() {}, debug() {}}}).css;
+    const toolbarSource = transpileModule(readFileSync(resolve(__dirname, "../lite/mobileToolbar.ts"), "utf8")
+        .replace(/^export /gm, ""), {compilerOptions: {target: ScriptTarget.ES2021}}).outputText;
     const directory = mkdtempSync(resolve(tmpdir(), "siyuan-title-drawer-"));
     const script = resolve(directory, "run.cjs");
-    const code = "const __name = value => value; (" + checkDrawerLayout.toString() + ")(" + JSON.stringify(css) + ")";
+    const code = "const __name = value => value; (" + checkDrawerLayout.toString() + ")(" + JSON.stringify(css) + "," +
+        JSON.stringify(toolbarSource) + ")";
     writeFileSync(script, `const {app, BrowserWindow} = require("electron");
 app.setPath("userData", ${JSON.stringify(resolve(directory, "profile"))});
 app.commandLine.appendSwitch("disable-gpu");
 app.whenReady().then(async () => {
     const win = new BrowserWindow({show:false, width:390, height:900, webPreferences:{nodeIntegration:true, contextIsolation:false}});
+    win.webContents.on("console-message", event => console.error(event.message));
     try {
         await win.loadURL("data:text/html,<html><body></body></html>");
         console.log(await win.webContents.executeJavaScript(${JSON.stringify(code)}));

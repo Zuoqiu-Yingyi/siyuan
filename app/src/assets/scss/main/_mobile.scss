@@ -1921,6 +1921,11 @@ body.mobile-topbar--merged {
 }
 
 .mobile-document-title-dialog {
+  .document-title-dialog,
+  .protyle-title__rich {
+    background-color: var(--b3-theme-surface);
+  }
+
   .mobile-document-title-sheet {
     max-height: 100%;
   }
