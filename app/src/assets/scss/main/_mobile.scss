@@ -290,6 +290,13 @@ body.mobile-keyboard--open {
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+
+      > .document-title-preview {
+        max-height: 30px;
+        overflow: hidden;
+        line-height: inherit;
+        text-overflow: ellipsis;
+      }
     }
   }
 
@@ -1921,6 +1928,11 @@ body.mobile-topbar--merged {
 }
 
 .mobile-document-title-dialog {
+  .protyle-title__input {
+    // 重命名抽屉使用界面字号，避免文档标题的倍数字号挤占编辑空间。
+    font-size: var(--b3-font-size);
+  }
+
   .document-title-dialog,
   .protyle-title__rich {
     background-color: var(--b3-theme-surface);

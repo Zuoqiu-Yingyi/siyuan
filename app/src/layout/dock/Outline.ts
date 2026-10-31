@@ -43,7 +43,7 @@ import {applyHeadingLevelUpdates, getHeadingLevelUpdateOperations} from "../../p
 import {syncDocTitleIAL} from "../../protyle/util/docTitleIAL";
 import {canBatchConvertHeadings, showHeadingBatchDialog} from "../../protyle/util/headingBatch";
 import {waitForPendingTransactions} from "../../protyle/util/transactionQueue";
-import {renderOutlineDocumentTitle} from "../../protyle/header/outlineDocumentTitle";
+import {renderDocumentTitlePreview} from "../../protyle/header/documentTitlePreview";
 
 export class Outline extends Model {
     private currentRequestID = 0;
@@ -525,7 +525,8 @@ export class Outline extends Model {
                 docTitleElement.classList.remove("fn__none");
                 if (this.blockId) {
                     const id = this.blockId;
-                    renderOutlineDocumentTitle(docTitleElement.querySelector(".b3-list-item__text"), id,
+                    docTitleElement.querySelector(".b3-list-item__text").classList.add("outline-document-title");
+                    renderDocumentTitlePreview(docTitleElement.querySelector(".b3-list-item__text"), id,
                         this.getNotebookId(), () => this.blockId === id);
                 }
             }

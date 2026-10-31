@@ -290,7 +290,7 @@ test("desktop title editing retains the centered dialog without mobile viewport 
     assert.equal(state.resizeListeners.size, 0);
 });
 
-const checkDrawerLayout = (css: string, toolbarSource: string) => {
+const checkDrawerLayout = (css: string, toolbarSource: string, paddingSource: string) => {
     const check: typeof assert = require("node:assert/strict");
     const {paddingElement, setUndo} = new Function(toolbarSource +
         "\nreturn {paddingElement: getMobileToolbarPaddingElement, setUndo: setMobileToolbarUndo};")() as {
@@ -314,7 +314,13 @@ const checkDrawerLayout = (css: string, toolbarSource: string) => {
     const host = document.querySelector<HTMLElement>(".document-title-dialog");
     const editable = document.querySelector<HTMLElement>("[contenteditable]");
     const action = document.querySelector<HTMLElement>(".b3-dialog__action");
-    const owner = {element: host, contentElement: host.firstElementChild} as IProtyle;
+    const owner = {element: host, contentElement: host.firstElementChild, options: {action: [], render: {title: true}},
+        preview: {updatePadding: () => {}}, title: {element: host.querySelector(".protyle-title")},
+        wysiwyg: {element: host.querySelector(":scope > .protyle-content > .protyle-wysiwyg")}} as unknown as IProtyle;
+    const setPadding = new Function("Constants", "getPadding", "BACKLINK_EDITOR_PADDING",
+        paddingSource + "\nreturn setPadding;")({CB_GET_HISTORY: "history"},
+        () => ({left: 24, right: 16, top: 16, bottom: 16}), "");
+    setPadding(owner);
     const fragment = {lite: true, element: host.querySelector(".protyle-title__rich")} as IProtyle;
     setUndo(fragment, owner, () => {});
     for (const height of [800, 350, 220]) {
@@ -324,6 +330,7 @@ const checkDrawerLayout = (css: string, toolbarSource: string) => {
             document.body.style.setProperty("--b3-font-size-editor", large ? "32px" : "16px");
             for (const long of [false, true]) {
                 editable.innerHTML = long ? "<strong>Rich title </strong><em>with styles </em>".repeat(50) : "Untitled document";
+                check.equal(getComputedStyle(editable).fontSize, "16px", "the mobile rename field uses the UI font size");
                 const rect = sheet.getBoundingClientRect();
                 const button = action.getBoundingClientRect();
                 const editor = host.getBoundingClientRect();
@@ -337,6 +344,11 @@ const checkDrawerLayout = (css: string, toolbarSource: string) => {
                         host.firstElementChild.clientHeight, "long rich titles remain scrollable: " + context);
                 } else if (height === 800 && !large) {
                     check.ok(rect.height < 250, "short title does not reserve a full editor: " + context);
+                }
+                if (!long && height === 800) {
+                    const title = owner.title.element.getBoundingClientRect();
+                    check.ok(Math.abs((title.top - editor.top) - (editor.bottom - title.bottom)) < 1,
+                        "short titles have symmetric vertical spacing after editor padding updates: " + context);
                 }
             }
         }
@@ -372,10 +384,14 @@ test("native mobile title drawer keeps its action above the keyboard and scrolls
     const css = compile(resolve(__dirname, "../../assets/scss/mobile.scss"), {logger: {warn() {}, debug() {}}}).css;
     const toolbarSource = transpileModule(readFileSync(resolve(__dirname, "../lite/mobileToolbar.ts"), "utf8")
         .replace(/^export /gm, ""), {compilerOptions: {target: ScriptTarget.ES2021}}).outputText;
+    const uiSource = readFileSync(resolve(__dirname, "../ui/initUI.ts"), "utf8");
+    const paddingSource = transpileModule(uiSource.slice(uiSource.indexOf("export const setPadding ="),
+        uiSource.indexOf("export const getPadding =")).replace(/^export /gm, ""),
+    {compilerOptions: {target: ScriptTarget.ES2021}}).outputText;
     const directory = mkdtempSync(resolve(tmpdir(), "siyuan-title-drawer-"));
     const script = resolve(directory, "run.cjs");
     const code = "const __name = value => value; (" + checkDrawerLayout.toString() + ")(" + JSON.stringify(css) + "," +
-        JSON.stringify(toolbarSource) + ")";
+        JSON.stringify(toolbarSource) + "," + JSON.stringify(paddingSource) + ")";
     writeFileSync(script, `const {app, BrowserWindow} = require("electron");
 app.setPath("userData", ${JSON.stringify(resolve(directory, "profile"))});
 app.commandLine.appendSwitch("disable-gpu");

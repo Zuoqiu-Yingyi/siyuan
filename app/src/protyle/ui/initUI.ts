@@ -417,7 +417,9 @@ export const setPadding = (protyle: IProtyle) => {
     }
     if (protyle.options.render.title) {
         // pc 端 文档名 attr 过长和添加标签等按钮重合
-        if (responsivePadding) {
+        if (protyle.element.classList.contains("document-title-dialog")) {
+            protyle.title.element.style.margin = "";
+        } else if (responsivePadding) {
             protyle.title.element.style.margin = "";
             protyle.title.element.style.marginTop = "16px";
         } else {

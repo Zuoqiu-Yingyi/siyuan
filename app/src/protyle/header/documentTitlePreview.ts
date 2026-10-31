@@ -3,12 +3,17 @@ import {sanitizeKernelHTML} from "../../util/hostCapabilities";
 import {mathRender} from "../render/mathRender";
 import {getDocDisplayName} from "../../util/pathName";
 
-// 只更新当前仍在面板内的文字节点；切换文档、锁定或清空会移除旧节点，使迟到响应失效。
-export const renderOutlineDocumentTitle = (element: HTMLElement, id: string, notebook: string,
+const requests = new WeakMap<HTMLElement, number>();
+
+// 只更新当前仍连接的预览节点；切换文档、锁定或清空会使迟到响应失效。
+export const renderDocumentTitlePreview = (element: HTMLElement, id: string, notebook: string,
                                             isCurrent: () => boolean) => {
     if (!element || !id) return;
+    const request = (requests.get(element) || 0) + 1;
+    requests.set(element, request);
     fetchPost("/api/block/getDocTitle", {id, notebook}, response => {
-        if (response.code !== 0 || !response.data || !element.isConnected || !isCurrent()) return;
+        if (response.code !== 0 || !response.data || !element.isConnected || !isCurrent() ||
+            requests.get(element) !== request) return;
         const value = response.data;
         if (value.id !== id || notebook && value.notebook !== notebook) return;
         element.dataset.documentTitleId = id;
@@ -30,7 +35,7 @@ export const renderOutlineDocumentTitle = (element: HTMLElement, id: string, not
             item.removeAttribute("contenteditable");
             item.removeAttribute("spellcheck");
         });
-        element.classList.add("b3-typography", "outline-document-title");
+        element.classList.add("b3-typography", "document-title-preview");
         element.dataset.protyleLiteRender = "safe";
         element.replaceChildren(...Array.from(content.childNodes));
         void mathRender(element);

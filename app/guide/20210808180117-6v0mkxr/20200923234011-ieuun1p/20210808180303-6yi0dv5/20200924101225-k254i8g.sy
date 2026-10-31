@@ -6,7 +6,7 @@
 		"id": "20200924101225-k254i8g",
 		"title": "Content Block Type",
 		"type": "doc",
-		"updated": "20261031223411"
+		"updated": "20261101004533"
 	},
 	"Children": [
 		{
@@ -3364,12 +3364,12 @@
 			"Type": "NodeParagraph",
 			"Properties": {
 				"id": "20261025133233-2qcn948",
-				"updated": "20261031223411"
+				"updated": "20261101004533"
 			},
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "Document titles support all native inline elements, including combined text styles, images, links, tags, block references, inline formulas, memos, and file annotation references. Edit the full title above the document; on mobile, tap the compact title to edit it in a bottom drawer. The drawer follows the visible area above the keyboard, and long titles can be scrolled. File trees, tabs, and breadcrumbs show a plain-text summary."
+					"Data": "Document titles support all native inline elements, including combined text styles, images, links, tags, block references, inline formulas, memos, and file annotation references. Edit the full title above the document; the mobile top bar also displays inline styles and images, and tapping it opens a bottom drawer for editing. The drawer uses the interface font size and follows the visible area above the keyboard. Long titles can be scrolled. File trees, tabs, and breadcrumbs in the document show a plain-text summary."
 				}
 			]
 		},

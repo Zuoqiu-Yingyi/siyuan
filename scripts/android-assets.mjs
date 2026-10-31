@@ -22,7 +22,7 @@ export function androidStageFiles(stageDir) {
     }
     const hashed = names.filter(name => /\.[a-f\d]{8,}\./i.test(name) && !name.endsWith(".map"));
     const selected = new Set(names.filter(name => !/\.[a-f\d]{8,}\./i.test(name) && !name.endsWith(".map")));
-    // Follow references from the current HTML and selected scripts/styles.
+    // 从当前入口递归收集静态引用和 Webpack 运行时拼接的资源名。
     for (const name of selected) {
       if (!/\.(html|js|css)$/.test(name)) continue;
       const content = readFileSync(path.join(directory, name), "utf8");
@@ -31,6 +31,13 @@ export function androidStageFiles(stageDir) {
       }
       for (const match of content.matchAll(/(?:main|startup|base)\.[a-f\d]{8,}\.(?:js|css)\b/gi)) {
         if (!names.includes(match[0])) throw new Error(`Missing Android resource: ${directory}/${match[0]}`);
+      }
+      for (const runtime of content.matchAll(/\{((?:\s*(?:\d+|["'][\w-]+["'])\s*:\s*["'][a-f\d]{8,}["']\s*,?)+)\}\s*\[[^\]]+\]\s*\+\s*["']\.(js|css)["']/gi)) {
+        for (const chunk of runtime[1].matchAll(/(\d+|["'][\w-]+["'])\s*:\s*["']([a-f\d]{8,})["']/gi)) {
+          const resource = `${chunk[1].replace(/["']/g, "")}.${chunk[2]}.${runtime[2]}`;
+          if (!names.includes(resource)) throw new Error(`Missing Android resource: ${directory}/${resource}`);
+          selected.add(resource);
+        }
       }
     }
     for (const name of selected) result.push(`stage/build/${target}/${name}`);

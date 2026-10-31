@@ -6,7 +6,8 @@
 @use "block-resize" as *;
 @use "inline";
 
-.b3-typography.outline-document-title {
+.b3-typography.outline-document-title,
+.b3-typography.document-title-preview {
   display: block;
   font-size: inherit;
   font-family: inherit;
@@ -1037,7 +1038,7 @@
     display: none;
   }
 
-  > .protyle-content > .protyle-title {
+  > .protyle-content > .protyle-top > .protyle-title {
     margin: 16px 24px;
   }
 }

@@ -34,6 +34,9 @@ import {enterDocumentFromTitle} from "./titleEnter";
 import {setTitleAutoDirection} from "../render/autoDirection";
 import {DocumentTitleEditor} from "./documentTitleEditor";
 import {waitForPendingTransactions} from "../util/transactionQueue";
+/// #if MOBILE
+import {updateMobileDocumentTitle} from "../../mobile/util/mobileDocumentTitle";
+/// #endif
 
 export class Title {
     public element: HTMLElement;
@@ -427,7 +430,7 @@ export class Title {
             if (nbsp2space(title) !== nbsp2space(inputElement.value)) {
                 inputElement.value = empty ? "" : title;
             }
-            document.getElementById("toolbarNameReadonly").textContent = inputElement.value;
+            updateMobileDocumentTitle(this.protyle);
         }
         /// #else
         if (nbsp2space(title) !== nbsp2space(this.editElement.textContent)) {
@@ -448,7 +451,7 @@ export class Title {
         if (window.siyuan.mobile.editor?.protyle === this.protyle) {
             const input = document.getElementById("toolbarName") as HTMLInputElement;
             input.value = empty ? "" : title;
-            document.getElementById("toolbarNameReadonly").textContent = input.value;
+            updateMobileDocumentTitle(this.protyle);
         }
         /// #endif
     }

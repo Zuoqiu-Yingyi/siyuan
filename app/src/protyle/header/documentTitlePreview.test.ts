@@ -11,7 +11,7 @@ const browserCases = (source: string) => {
     const check: typeof assert = require("node:assert/strict");
     const requests: Array<{data: {id: string, notebook: string}, reply: (value: unknown) => void}> = [];
     let renders = 0;
-    const exports: {renderOutlineDocumentTitle?: (element: HTMLElement, id: string, notebook: string,
+    const exports: {renderDocumentTitlePreview?: (element: HTMLElement, id: string, notebook: string,
         isCurrent: () => boolean) => void} = {};
     new Function("exports", "require", source)(exports, (name: string) => {
         if (name === "../../util/fetch") return {fetchPost: (_url: string, data: {id: string, notebook: string},
@@ -21,7 +21,7 @@ const browserCases = (source: string) => {
         if (name === "../../util/pathName") return {getDocDisplayName: (text: string, empty: boolean) => empty ? "Untitled" : text};
         throw new Error(name);
     });
-    const render = exports.renderOutlineDocumentTitle;
+    const render = exports.renderDocumentTitlePreview;
     const target = document.createElement("span");
     document.body.append(target);
     const result = (content: string, overrides = {}) => ({code: 0, data: {
@@ -57,17 +57,21 @@ const browserCases = (source: string) => {
     check.equal(target.innerHTML, previous, "refreshing does not flash the rich label back to plain text");
     pending.reply(result("Changed"));
     check.equal(target.textContent, "Changed");
+    const older = request();
+    request().reply(result("Latest"));
+    older.reply(result("Stale same-document response"));
+    check.equal(target.textContent, "Latest", "same-document refreshes cannot overwrite a newer preview");
     request().reply(result("Wrong document", {id: "other"}));
     request().reply(result("Wrong notebook", {notebook: "other-box"}));
     request(() => false).reply(result("Switched"));
-    check.equal(target.textContent, "Changed");
+    check.equal(target.textContent, "Latest");
     const detached = request();
     target.remove();
     detached.reply(result("Locked secret"));
-    check.equal(target.textContent, "Changed", "late responses cannot restore detached or locked title content");
+    check.equal(target.textContent, "Latest", "late responses cannot restore detached or locked title content");
     document.body.append(target);
     request().reply({code: -1, data: null});
-    check.equal(target.textContent, "Changed", "a failed read retains the existing display");
+    check.equal(target.textContent, "Latest", "a failed read retains the existing display");
     request().reply(result("", {format: "plain", text: "**literal** <tag> & slash/title"}));
     check.equal(target.textContent, "**literal** <tag> & slash/title");
     check.equal(target.querySelector("tag"), null);
@@ -78,11 +82,11 @@ const browserCases = (source: string) => {
     return "Outline document title cases passed";
 };
 
-test("outline document titles preserve native inline content, literal names and notebook-bound request lifetimes", {
+test("document title previews preserve native inline content, literal names and notebook-bound request lifetimes", {
     skip: process.platform === "linux" && !process.env.DISPLAY && !process.env.WAYLAND_DISPLAY,
     timeout: 30000,
 }, async () => {
-    const source = transpileModule(readFileSync(path.join(__dirname, "outlineDocumentTitle.ts"), "utf8"), {
+    const source = transpileModule(readFileSync(path.join(__dirname, "documentTitlePreview.ts"), "utf8"), {
         compilerOptions: {module: ModuleKind.CommonJS, target: ScriptTarget.ES2021},
     }).outputText;
     const temporary = mkdtempSync(path.join(tmpdir(), "siyuan-outline-title-test-"));

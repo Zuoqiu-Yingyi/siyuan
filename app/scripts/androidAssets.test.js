@@ -62,3 +62,32 @@ test("Android packaging rejects missing current bundles and serving/export entry
         writeFileSync(file, content);
     }
 });
+
+test("Android assets follow Webpack runtime chunk maps recursively without including old chunks", async t => {
+    const {androidStageFiles} = await import("../../scripts/android-assets.mjs");
+    const {root, write} = fixture(t);
+    write("build/mobile/main.12345678.js", 'r.u=id=>""+id+"."+{412:"dfe0ef8620230f31a144"}[id]+".js";');
+    write("build/mobile/412.dfe0ef8620230f31a144.js", 'r.u=id=>id+"."+{"531":"6a0aa49dc30267337013"}[id]+".js";r.miniCssF=id=>id+"."+{531:"abcdef1234567890"}[id]+".css";');
+    write("build/mobile/531.6a0aa49dc30267337013.js");
+    write("build/mobile/531.abcdef1234567890.css");
+    write("build/mobile/412.87654321.js");
+    const mobile = androidStageFiles(root).filter(name => name.startsWith("stage/build/mobile/"));
+    assert.deepEqual(mobile, [
+        "stage/build/mobile/412.dfe0ef8620230f31a144.js",
+        "stage/build/mobile/531.6a0aa49dc30267337013.js",
+        "stage/build/mobile/531.abcdef1234567890.css",
+        "stage/build/mobile/base.12345678.css",
+        "stage/build/mobile/index.html",
+        "stage/build/mobile/main.12345678.js",
+        "stage/build/mobile/startup.12345678.js",
+    ]);
+});
+
+test("Android packaging rejects missing resources referenced through Webpack runtime maps", async t => {
+    const {androidStageFiles} = await import("../../scripts/android-assets.mjs");
+    const {root, write} = fixture(t);
+    for (const extension of ["js", "css"]) {
+        write("build/mobile/main.12345678.js", `r.u=id=>id+"."+{412:"dfe0ef8620230f31a144"}[id]+".${extension}";`);
+        assert.throws(() => androidStageFiles(root), new RegExp(`Missing Android resource: .*412\\.dfe0ef8620230f31a144\\.${extension}`));
+    }
+});

@@ -25,7 +25,7 @@ import {dragOverScroll, stopScrollAnimation} from "../../boot/globalEvent/dragov
 import {escapeHtml} from "../../util/escape";
 import {getFileTreeIconHTML} from "../../emoji/fileTreeIcon";
 import {syncDocTitleIAL} from "../../protyle/util/docTitleIAL";
-import {renderOutlineDocumentTitle} from "../../protyle/header/outlineDocumentTitle";
+import {renderDocumentTitlePreview} from "../../protyle/header/documentTitlePreview";
 import {canBatchConvertHeadings, showHeadingBatchDialog} from "../../protyle/util/headingBatch";
 import {bindMousePointerTouchBridge, isMousePointerTouchEvent} from "../util/mousePointerTouchBridge";
 import {waitForPendingTransactions} from "../../protyle/util/transactionQueue";
@@ -646,7 +646,8 @@ export class MobileOutline extends Model {
         docTitleElement.classList.remove("fn__none");
         if (this.blockId) {
             const id = this.blockId;
-            renderOutlineDocumentTitle(docTitleElement.querySelector(".b3-list-item__text"), id,
+            docTitleElement.querySelector(".b3-list-item__text").classList.add("outline-document-title");
+            renderDocumentTitlePreview(docTitleElement.querySelector(".b3-list-item__text"), id,
                 this.notebookId, () => this.blockId === id);
         }
         if (typeof count === "number" && count !== -1) {
