@@ -129,6 +129,7 @@ Unambiguous mechanical edits with no behavioral or compatibility impact need no 
    - When accessing `ld246.com`, set the HTTP `User-Agent` header to `SiYuan-Coding-Agent`
    - Read post details with `GET https://ld246.com/api/v2/article/{articleId}?p=1`; `data.article` contains the post, and `p` paginates replies. For Markdown, use `GET https://ld246.com/article/raw/{articleId}`
    - Publish a reply with `POST https://ld246.com/api/v2/comment`, sending `articleId` and `commentContent` in the JSON body; optionally include `commentOriginalCommentId` when replying to an existing comment
+   - Update your own reply with `PUT https://ld246.com/api/v2/comment/{commentId}`, sending `commentContent` in the JSON body. Specify `commentContentType: "markdown"` for Markdown; omit `commentVisible` to preserve its current visibility. Read the post back and verify the updated reply
    - Authenticate these endpoints with `Authorization: token <LD_TOKEN>` using the environment variable; on Windows, check process, user, then machine scope. Do not expose the Token or rely on UA exemptions
    - Check HTTP status and JSON `code` (`0` means success); report missing credentials or authentication errors
 9. **Configurable entries:**
