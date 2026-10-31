@@ -43,6 +43,18 @@ const INLINE_SLASH_IDS = new Set([
     "inlineCode", "kbd", "tag", "inlineMath", "emoji",
 ]);
 
+const confirmedEditors = new WeakSet<IProtyle>();
+
+// 重命名草稿仅在确认操作期间允许写入，失焦和全局保存只处理编辑器本地状态。
+export const confirmDocumentTitle = async (owner: IProtyle, save: () => Promise<void>) => {
+    confirmedEditors.add(owner);
+    try {
+        await save();
+    } finally {
+        confirmedEditors.delete(owner);
+    }
+};
+
 export class DocumentTitleEditor {
     public readonly fragment: ProtyleLiteFragment;
     private timer: number;
@@ -105,11 +117,15 @@ export class DocumentTitleEditor {
         this.saved = this.fingerprint();
         this.updateEditable();
         this.setReadonly(owner.disabled);
-        // 标题与正文共享内核撤销栈；临时段落的本地操作不能形成另一套历史。
-        this.fragment.protyle.undo = {
-            undo: () => this.undo(false), redo: () => this.undo(true), add: () => {}, clear: () => {},
-        };
-        setMobileToolbarUndo(this.fragment.protyle, owner, redo => void this.undo(redo).catch((): void => {}));
+        const dialogDraft = owner.element.classList.contains("document-title-dialog");
+        if (!dialogDraft) {
+            // 正文标题与正文共享内核撤销栈；重命名草稿使用片段的本地撤销栈。
+            this.fragment.protyle.undo = {
+                undo: () => this.undo(false), redo: () => this.undo(true), add: () => {}, clear: () => {},
+            };
+        }
+        setMobileToolbarUndo(this.fragment.protyle, dialogDraft ? this.fragment.protyle : owner,
+            redo => void this.undo(redo).catch((): void => {}));
         const events = ["input", "copy", "cut", "paste", "pointerdown", "pointerup", "mousedown", "mouseup",
             "click", "dblclick", "contextmenu", "dragstart", "dragover", "drop", "keyup"];
         events.forEach(type => host.addEventListener(type, event => event.stopPropagation()));
@@ -143,7 +159,7 @@ export class DocumentTitleEditor {
         }, true);
         host.addEventListener("keydown", event => this.keydown(event), true);
         host.addEventListener("focusout", () => {
-            if (!this.composing) {
+            if (!this.composing && !dialogDraft) {
                 void this.flush().catch(() => {});
             }
         });
@@ -176,12 +192,17 @@ export class DocumentTitleEditor {
             return;
         }
         clearTimeout(this.timer);
+        if (this.owner.element?.classList.contains("document-title-dialog")) return;
         this.timer = window.setTimeout((): void => { void this.flush().catch((): void => {}); }, Constants.TIMEOUT_INPUT);
     }
 
     public async flush(acceptedRevision?: string): Promise<void> {
         clearTimeout(this.timer);
         if (this.disposed) {
+            return this.saving;
+        }
+        if (this.owner.element?.classList.contains("document-title-dialog") && !confirmedEditors.has(this.owner)) {
+            await this.fragment.protyle.wysiwyg.flushPendingInput();
             return this.saving;
         }
         if (this.owner.disabled) {
@@ -391,7 +412,8 @@ export class DocumentTitleEditor {
             if (!displayed || this.owner.disabled) return;
             local.disabled = true;
             // 只使用用户刚看到的版本；若此后又有修改，内核仍会拒绝并重新展示冲突。
-            void this.flush(displayed.revision).then(() => dialog.destroy()).catch(error => console.error(error))
+            void confirmDocumentTitle(this.owner, () => this.flush(displayed.revision))
+                .then(() => dialog.destroy()).catch(error => console.error(error))
                 .finally(() => { local.disabled = this.owner.disabled; });
         });
         dialog.element.querySelector('[data-type="cancel"]').addEventListener("click", () => dialog.destroy());
@@ -441,16 +463,23 @@ export class DocumentTitleEditor {
         if (this.owner.disabled) {
             return;
         }
+        if (this.owner.element.classList.contains("document-title-dialog")) {
+            const protyle = this.fragment.protyle;
+            await protyle.wysiwyg.flushPendingInput();
+            await (redo ? protyle.undo.redo(protyle) : protyle.undo.undo(protyle));
+            this.updateEditable();
+            return;
+        }
         await this.flush();
         await (redo ? this.owner.undo.redo(this.owner) : this.owner.undo.undo(this.owner));
         await this.refresh();
     }
 
     private async enter() {
-        await this.flush();
         if (this.owner.element.classList.contains("document-title-dialog")) {
             this.owner.element.closest(".b3-dialog")?.querySelector<HTMLElement>('[data-type="confirm"]')?.click();
         } else {
+            await this.flush();
             await enterDocumentFromTitle(this.owner);
         }
     }

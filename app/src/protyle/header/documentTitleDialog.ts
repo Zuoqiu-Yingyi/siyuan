@@ -6,6 +6,7 @@ import {Protyle} from "../index";
 import {registerEditorSave} from "../util/editorSave";
 import {escapeHtml} from "../../util/escape";
 import {registerDocumentTitleDialog} from "./documentTitleDialogs";
+import {confirmDocumentTitle} from "./documentTitleEditor";
 /// #if MOBILE
 import {registerMobileSecondaryEditor} from "../../mobile/util/secondaryEditors";
 import {bindBottomSheetDialog} from "../../mobile/util/bindBottomSheetDialog";
@@ -39,10 +40,12 @@ export const openDocumentTitleDialog = (options: {id: string, notebook?: string,
         }
         closePending = true;
         try {
-            await editor?.flushPendingTransactions();
-            await guard?.flush();
-            if (disposed) return;
-            await editor?.protyle.title?.flushPendingInput();
+            await confirmDocumentTitle(editor.protyle, async () => {
+                await editor.flushPendingTransactions();
+                await guard?.flush();
+                if (disposed) return;
+                await editor.protyle.title?.flushPendingInput();
+            });
             if (disposed) return;
             canClose = true;
             dialog.destroy();
@@ -70,11 +73,9 @@ export const openDocumentTitleDialog = (options: {id: string, notebook?: string,
         content: `<div class="document-title-dialog"></div><div class="b3-dialog__action">
 <button class="b3-button b3-button--text" data-type="confirm">${escapeHtml(window.siyuan.languages.confirm)}</button></div>`,
         beforeClose: () => {
-            if (canClose) {
-                return true;
-            }
-            void close();
-            return false;
+            if (closePending && !canClose) return false;
+            dispose();
+            return true;
         },
         destroyCallback: dispose,
     });
@@ -90,7 +91,7 @@ export const openDocumentTitleDialog = (options: {id: string, notebook?: string,
         container.style.top = `${viewport.top}px`;
         container.style.height = `${Math.max(0, bottom - viewport.top)}px`;
     };
-    const unbindSheet = bindBottomSheetDialog(dialog, close, resize);
+    const unbindSheet = bindBottomSheetDialog(dialog, async () => { dialog.destroy(); }, resize);
     const toolbarObserver = new MutationObserver(resize);
     if (keyboardToolbar) {
         toolbarObserver.observe(keyboardToolbar, {attributes: true, attributeFilter: ["class", "style"]});

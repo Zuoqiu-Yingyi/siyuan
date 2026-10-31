@@ -128,6 +128,7 @@ const setup = (mobile: boolean) => {
     const allEditors = load("../../layout/getAll.ts");
     Object.assign(dependencies, allEditors);
     const system = load("../../window/onWindowsMsg.ts");
+    Object.assign(dependencies, load("documentTitleEditor.ts"));
     const titleDialog = load("documentTitleDialog.ts");
     return {window, messages, guards, instances, ready, secondary, registry, allEditors, system,
         viewport, resizeListeners, closeSheet: () => sheetClose(), resizeSheet: () => sheetResize(),
@@ -141,6 +142,39 @@ const setup = (mobile: boolean) => {
 };
 
 for (const mobile of [false, true]) {
+    test(`${mobile ? "mobile" : "desktop"} rename dismissal discards its draft without saving`, async () => {
+        const state = setup(mobile);
+        let writes = 0;
+        state.setFlush(async () => { writes++; });
+        state.setTitle(async () => { writes++; });
+        const dialog = state.open();
+        if (mobile) await state.closeSheet();
+        else dialog.destroy();
+        await settle();
+        assert.equal(dialog.destroyed, true);
+        assert.equal(dialog.host.content, "");
+        assert.equal(writes, 0);
+        assert.equal(state.guards[0].disposed, true);
+        assert.equal(state.instances[0].destroyed, 1);
+    });
+
+    test(`${mobile ? "mobile" : "desktop"} rename confirmation waits for acknowledgement and rejects duplicate submissions`, async () => {
+        const state = setup(mobile);
+        const pending = deferred();
+        let writes = 0;
+        state.setFlush(() => { writes++; return pending.promise; });
+        const dialog = state.open();
+        dialog.confirm.listeners.get("click")();
+        dialog.confirm.listeners.get("click")();
+        dialog.destroy();
+        if (mobile) await state.closeSheet();
+        assert.equal(writes, 1);
+        assert.equal(dialog.destroyed, false);
+        pending.resolve();
+        await settle();
+        assert.equal(dialog.destroyed, true);
+    });
+
     test(`title dialog participates in ${mobile ? "mobile" : "desktop"} editor saving before system lock`, async () => {
         const state = setup(mobile);
         const pending = deferred();
@@ -163,7 +197,7 @@ for (const mobile of [false, true]) {
         const pending = deferred();
         state.setFlush(() => pending.promise);
         const dialog = state.open();
-        dialog.destroy();
+        dialog.confirm.listeners.get("click")();
         assert.equal(dialog.destroyed, false);
         state.registry.closeDocumentTitleDialogs({notebookId: "other"});
         assert.equal(dialog.destroyed, false);
@@ -190,7 +224,7 @@ test("title dialog rechecks title input after the save guard finishes and preser
     state.setGuard(() => pending.promise);
     state.setTitle(async () => { saved = draft; });
     const dialog = state.open();
-    dialog.destroy();
+    dialog.confirm.listeners.get("click")();
     await settle();
     draft = "typed while waiting";
     pending.resolve();
@@ -201,7 +235,7 @@ test("title dialog rechecks title input after the save guard finishes and preser
 
     state.setFlush(async () => { throw new Error("Conflict"); });
     const blocked = state.open("other");
-    blocked.destroy();
+    blocked.confirm.listeners.get("click")();
     await settle();
     assert.equal(blocked.destroyed, false);
     assert.equal(blocked.host.content, "private title");
@@ -256,13 +290,15 @@ test("mobile title drawer follows keyboard viewport changes and keeps failed dra
     state.resizeToolbar();
     assert.equal(dialog.viewport.style.height, "300px");
     state.setTitle(async () => { throw new Error("Conflict"); });
-    await state.closeSheet();
+    dialog.confirm.listeners.get("click")();
+    await settle();
     assert.equal(dialog.destroyed, false);
     assert.equal(dialog.host.content, "private title");
     assert.equal(state.sheetDisposals(), 0);
     assert.equal(state.resizeListeners.size, 1);
     state.setTitle(async () => {});
-    await state.closeSheet();
+    dialog.confirm.listeners.get("click")();
+    await settle();
     assert.equal(dialog.destroyed, true);
     assert.equal(state.sheetDisposals(), 1);
     assert.equal(state.resizeListeners.size, 0);
