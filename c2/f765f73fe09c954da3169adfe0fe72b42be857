@@ -1,0 +1,29 @@
+kernel/server/serve.go
+  s_9b4be339310ec6::t_1c8241cc03c983 2067
+  s_9b4be339310ec6::t_180f83ebc97bae 2082-2113,2116,2118-2120,2122,2129-2132,2134
+  s_9b4be339310ec6::t_025cab6247144f 25
+  s_9b4be339310ec6::t_93e0e302978396 2133
+  s_9b4be339310ec6::t_ea10d5ff6ffdcc 2115,2117
+kernel/server/serve_webdav_guard_test.go
+  s_9b4be339310ec6::t_6d9f3b67de16af 125-143
+  s_9b4be339310ec6::t_2bc71388fa4bc2 1-7,10-17,19-124,144-171
+  s_9b4be339310ec6::t_9479e260ad3c1b 8-9,18
+kernel/server/serve_dav.go
+  s_9b4be339310ec6::t_2e873b62f8de1a 1-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.51-trip",
+  "base_commit_sha": "c2f765f73fe09c954da3169adfe0fe72b42be857",
+  "prompts": {},
+  "sessions": {
+    "s_9b4be339310ec6": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_y3ii3qdv1b45",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
