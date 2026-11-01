@@ -8,7 +8,7 @@ import {promisify} from "node:util";
 import {compile} from "sass";
 import {ModuleKind, ScriptTarget, transpileModule} from "typescript";
 
-const browserCases = (sources: Record<string, string>) => {
+const browserCases = async (sources: Record<string, string>) => {
     const check: typeof assert = require("node:assert/strict");
     document.head.innerHTML = `<style>${sources.css}</style>`;
     document.body.style.cssText = "--b3-font-size:16px;--b3-font-size-editor:32px";
@@ -17,10 +17,10 @@ const browserCases = (sources: Record<string, string>) => {
 <button class="toolbar__button">R</button></div><div id="editor"></div>`;
     const input = document.getElementById("toolbarName") as HTMLInputElement;
     const label = document.getElementById("toolbarNameReadonly");
-    const protyle = {element: document.getElementById("editor"), block: {rootID: "document"}, notebookId: "box",
+    const protyle: any = {element: document.getElementById("editor"), block: {rootID: "document"}, notebookId: "box", options: {render: {}},
         disabled: false, preview: {element: document.createElement("div")}};
     protyle.preview.element.className = "fn__none";
-    const runtime = {siyuan: {mobile: {editor: {protyle}}, config: {editor: {autoDirection: false}}}};
+    const runtime = {siyuan: {mobile: {editor: {protyle}}, config: {readonly: false, editor: {autoDirection: false}}}};
     const pending: Array<{id: string, reply: (response: unknown) => void}> = [];
     const modules: Record<string, any> = {
         "../../util/fetch": {fetchPost: (_url: string, data: {id: string}, reply: (response: unknown) => void) =>
@@ -37,6 +37,7 @@ const browserCases = (sources: Record<string, string>) => {
     };
     modules["../../protyle/header/documentTitlePreview"] = load(sources.preview);
     const {updateMobileDocumentTitle: update} = load(sources.title);
+    modules["../../mobile/util/mobileDocumentTitle"] = {updateMobileDocumentTitle: update};
     const {updateMobileTitleReadonly: readonly} = load(sources.readonly);
     const response = (html: string) => ({code: 0, data: {id: protyle.block.rootID, notebook: protyle.notebookId,
         format: "inline-ast", text: "Summary", empty: false,
@@ -59,6 +60,16 @@ const browserCases = (sources: Record<string, string>) => {
     check.ok(label.getBoundingClientRect().height <= 48, "inline content cannot expand the navigation bar");
     check.ok(label.firstElementChild.getBoundingClientRect().width <= label.getBoundingClientRect().width + 1);
     const richHTML = label.innerHTML;
+    for (const className of ["b3-list-item__text", "item__text", "mobile-tabs__item-title"]) {
+        const compact = document.createElement("span");
+        compact.className = className;
+        document.body.append(compact);
+        modules["../../protyle/header/documentTitlePreview"].renderDocumentTitlePreview(compact, "document", "box", () => true,
+            response('<span style="font-size:72px">Large preview</span><span class="img"><img height="200" width="100"></span>').data);
+        check.ok(compact.getBoundingClientRect().height <= parseFloat(getComputedStyle(compact).fontSize) * 1.625 + 1,
+            "rich previews preserve compact tree and tab heights: " + className);
+        compact.remove();
+    }
     for (const mode of ["readonly", "preview", "editing"]) {
         protyle.disabled = mode === "readonly";
         protyle.preview.element.classList.toggle("fn__none", mode !== "preview");
@@ -66,6 +77,75 @@ const browserCases = (sources: Record<string, string>) => {
         check.equal(label.innerHTML, richHTML, "mode switching preserves the rich preview");
         check.equal(label.tabIndex, mode === "editing" ? 0 : -1);
     }
+    let opens = 0;
+    let saves = 0;
+    modules["../../util/fetch"].fetchSyncPost = async () => ({code: 0, data: {...response("").data, revision: "r0"}});
+    modules["../render/autoDirection"] = {setTitleAutoDirection: () => {}};
+    modules["../util/normalizeText"] = {nbsp2space: (text: string) => text};
+    modules["../../util/escape"] = {escapeHtmlTextAndAttr: (text: string) => text};
+    let keyboards = 0;
+    modules["../../mobile/util/mobileAppUtil"] = {callMobileAppShowKeyboard: () => keyboards++};
+    modules["./documentTitleEditor"] = {DocumentTitleEditor: class {
+        element = document.createElement("div");
+        fragment: any;
+        constructor(_owner: unknown, host: HTMLElement, _value: unknown, onEditable: (element: HTMLElement) => void) {
+            host.classList.add("protyle-title__rich");
+            host.innerHTML = '<div class="protyle-content"><div class="protyle-wysiwyg"><div data-type="NodeParagraph">' +
+                '<div class="protyle-title__input" contenteditable="true"><span data-type="strong">Inline title</span></div></div></div></div>';
+            this.element = host.querySelector("[contenteditable]");
+            this.fragment = {protyle: {element: host}};
+            onEditable(this.element);
+        }
+        focus() { opens++; this.element.focus(); }
+        flush() { saves++; return Promise.resolve(); }
+        refresh() { return Promise.resolve(); }
+        setReadonly(disabled: boolean) { this.element.contentEditable = String(!disabled); }
+        destroy() { this.element.remove(); }
+    }};
+    modules["../../constants"] = {Constants: {}};
+    const {Title} = load(sources.editorTitle);
+    const title = Object.assign(Object.create(Title.prototype), {protyle, summary: "Summary", sourceRequest: 0,
+        element: document.createElement("div")});
+    protyle.title = title;
+    title.element.dataset.nodeId = "document";
+    title.element.innerHTML = '<div class="protyle-attr"></div>';
+    protyle.preview.element.classList.remove("fn__none");
+    await title.openEditor();
+    check.equal(label.querySelector(".mobile-document-title-editor"), null, "preview mode does not enter inline editing");
+    protyle.preview.element.classList.add("fn__none");
+    await title.openEditor();
+    const inline = label.querySelector<HTMLElement>(".mobile-document-title-editor");
+    check.ok(inline, "the complete title editor mounts directly in the navigation bar");
+    check.equal(document.activeElement, title.editElement);
+    check.equal(label.getAttribute("role"), null);
+    check.ok(label.getBoundingClientRect().height <= 48);
+    check.equal(getComputedStyle(title.editElement).fontSize, "17px");
+    const editable = title.editElement;
+    title.setTitle("Saved summary");
+    check.equal(title.editElement, editable, "summary refresh keeps the inline editor and caret");
+    check.equal(label.querySelector(".mobile-document-title-editor"), inline);
+    await title.flushPendingInput();
+    check.equal(saves, 1);
+    await title.openEditor();
+    check.equal(opens, 2, "repeated editing reuses the mounted title editor");
+    check.equal(keyboards, 2, "inline opening uses the native keyboard bridge after source loading");
+    protyle.disabled = true;
+    readonly(protyle);
+    check.equal(editable.contentEditable, "false");
+    check.notEqual(document.activeElement, editable);
+    protyle.disabled = false;
+    readonly(protyle);
+    check.equal(editable.contentEditable, "true");
+    protyle.wysiwyg = {renderCustom: () => {}};
+    protyle.block.rootID = "next";
+    title.render(protyle, {data: {ial: {title: "Next"}, name: "Next", refCount: 0}});
+    check.equal(label.querySelector(".mobile-document-title-editor"), null, "document switches destroy the previous inline source");
+    check.equal(title.editElement, undefined);
+    check.equal(label.textContent, "Next");
+    title.destroy();
+    protyle.title = undefined;
+    protyle.block.rootID = "document";
+    pending.length = 0;
     update(protyle);
     const stale = pending.shift();
     protyle.block.rootID = "next";
@@ -90,7 +170,7 @@ const browserCases = (sources: Record<string, string>) => {
     return "Mobile document title cases passed";
 };
 
-test("mobile navigation renders rich titles, preserves summaries and clears stale or locked previews", {
+test("mobile navigation edits rich titles inline, keeps compact previews and clears stale or locked content", {
     skip: process.platform === "linux" && !process.env.DISPLAY && !process.env.WAYLAND_DISPLAY,
     timeout: 30000,
 }, async () => {
@@ -99,6 +179,9 @@ test("mobile navigation renders rich titles, preserves summaries and clears stal
     }).outputText;
     const sources = {title: source("mobileDocumentTitle.ts"), preview: source("../../protyle/header/documentTitlePreview.ts"),
         readonly: source("../../protyle/util/setEditMode.ts"),
+        editorTitle: transpileModule(require("ifdef-loader/preprocessor").parse(
+            readFileSync(resolve(__dirname, "../../protyle/header/Title.ts"), "utf8"), {MOBILE: true, BROWSER: false}),
+        {compilerOptions: {module: ModuleKind.CommonJS, target: ScriptTarget.ES2021}}).outputText,
         css: compile(resolve(__dirname, "../../assets/scss/mobile.scss"), {logger: {warn() {}, debug() {}}}).css};
     const directory = mkdtempSync(resolve(tmpdir(), "siyuan-mobile-title-"));
     const script = resolve(directory, "run.cjs");

@@ -73,8 +73,31 @@ func SetDocumentTitleParagraph(root, paragraph *ast.Node) error {
 	if err != nil {
 		return err
 	}
+	if text, plain := PlainDocumentTitle(paragraph); plain {
+		root.DocumentTitle = nil
+		root.SetIALAttr("title", text)
+		if text == "" {
+			root.SetIALAttr(DocumentTitleEmptyAttr, "true")
+		} else {
+			root.RemoveIALAttr(DocumentTitleEmptyAttr)
+		}
+		return nil
+	}
 	root.DocumentTitle = source
 	return RefreshDocumentTitle(root)
+}
+
+// PlainDocumentTitle 仅折叠可无损还原的普通文字，样式、资源、引用及行内换行继续保存完整源。
+func PlainDocumentTitle(paragraph *ast.Node) (string, bool) {
+	var text strings.Builder
+	for node := paragraph.FirstChild; node != nil; node = node.Next {
+		if node.Type != ast.NodeText || len(node.KramdownIAL) != 0 || node.FirstChild != nil {
+			return "", false
+		}
+		text.Write(node.Tokens)
+	}
+	value := text.String()
+	return value, value == DocumentTitleText(paragraph)
 }
 
 // RefreshDocumentTitle 只从已验证的完整源刷新摘要，空占位文字不进入源。

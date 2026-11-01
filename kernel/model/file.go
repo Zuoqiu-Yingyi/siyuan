@@ -45,6 +45,8 @@ type File struct {
 	Path             string `json:"path"`
 	Name             string `json:"name"` // 标题，即 ial["title"]
 	TitleEmpty       bool   `json:"titleEmpty,omitempty"`
+	TitleFormat      string `json:"titleFormat,omitempty"`
+	TitleRevision    string `json:"titleRevision,omitempty"`
 	Icon             string `json:"icon"`
 	Name1            string `json:"name1"` // 命名，即 ial["name"]
 	Alias            string `json:"alias"`
@@ -83,6 +85,13 @@ func (box *Box) docFromFileInfo(fileInfo *FileInfo, ial map[string]string) (ret 
 	ret.Size = uint64(fileInfo.size)
 	ret.Name = ial["title"]
 	ret.TitleEmpty = ial[NodeAttrTitleEmpty] == "true"
+	if metadata, err := treenode.GetDocumentMetadata(box.ID, pathID); err == nil {
+		ret.TitleFormat = metadata.Title.Format
+		ret.TitleRevision = metadata.SourceRevision
+		if metadata.Title.Format == "plain" {
+			ret.TitleRevision = treenode.DocumentRevision(metadata.Title)
+		}
+	}
 	if icon, ok := util.FilterIconValue(ial["icon"]); ok {
 		ret.Icon = icon
 	}

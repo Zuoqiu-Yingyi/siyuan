@@ -20,15 +20,20 @@ export const updateMobileTitleReadonly = (protyle: IProtyle) => {
         inputElement.blur();
     }
     const documentTitle = protyle.block.rootID !== protyle.notebookId;
+    const inlineEditor = readonlyElement.querySelector(".mobile-document-title-editor");
+    if (inlineEditor) {
+        if (readonly && inlineEditor.contains(document.activeElement)) (document.activeElement as HTMLElement).blur();
+        protyle.title?.setReadonly(readonly);
+    }
     inputElement.readOnly = readonly || documentTitle;
     if (!documentTitle) readonlyElement.textContent = inputElement.value;
-    if (documentTitle && !readonly) {
+    if (documentTitle && !readonly && !inlineEditor) {
         readonlyElement.tabIndex = 0;
     } else {
         if (document.activeElement === readonlyElement) readonlyElement.blur();
         readonlyElement.removeAttribute("tabindex");
     }
-    if (documentTitle) readonlyElement.setAttribute("role", "button");
+    if (documentTitle && !inlineEditor) readonlyElement.setAttribute("role", "button");
     else readonlyElement.removeAttribute("role");
     readonlyElement.setAttribute("aria-disabled", String(readonly));
     inputElement.classList.toggle("fn__none", readonly || documentTitle);

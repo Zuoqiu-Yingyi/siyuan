@@ -297,6 +297,23 @@ body.mobile-keyboard--open {
         line-height: inherit;
         text-overflow: ellipsis;
       }
+
+      > .mobile-document-title-editor {
+        max-height: 30px;
+        overflow: auto;
+        cursor: text;
+
+        .protyle-title__input {
+          font-size: 17px;
+          line-height: 30px;
+          white-space: pre;
+        }
+
+        img {
+          max-height: 1.5em;
+          width: auto;
+        }
+      }
     }
   }
 

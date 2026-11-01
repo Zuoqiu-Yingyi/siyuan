@@ -252,9 +252,12 @@ type FileTreeSearchDoc struct {
 	FlashcardCount    *string `json:"flashcardCount,omitempty"`
 }
 type FileTreeFile struct {
-	Path              string `json:"path"`
-	Name              string `json:"name"`
-	TitleEmpty        bool   `json:"titleEmpty,omitempty"`
+	Path       string `json:"path"`
+	Name       string `json:"name"`
+	TitleEmpty bool   `json:"titleEmpty,omitempty"`
+	// 标题格式和语义源版本来自笔记本内的派生索引；索引尚未就绪时省略，完整源按 ID 单独读取。
+	TitleFormat       string `json:"titleFormat,omitempty" api:"enum=plain|inline-ast"`
+	TitleRevision     string `json:"titleRevision,omitempty"`
 	Icon              string `json:"icon"`
 	Name1             string `json:"name1"`
 	Alias             string `json:"alias"`

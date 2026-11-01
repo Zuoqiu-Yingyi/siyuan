@@ -1250,12 +1250,15 @@ var SetDocSortMode = define[FileTreeSortModeRequest, *FileTreeSortModeData]("set
 
 // SearchDocs 保留兼容展示 hPath，并单独返回文档或笔记本的纯文本 title；客户端不能从 hPath 拆出标题或层级。
 var SearchDocs = define[FileTreeSearchRequest, []*FileTreeSearchDoc]("searchDocs", "/api/filetree/searchDocs", AuthenticatedAccess, JSONBody, ResponseOptions{}, "POST")
+
+// ListDocsByPath 的 files 保留纯文本 name，可附带 titleFormat 和 titleRevision，供客户端按需读取富文本标题。
 var ListDocsByPath = define[FileTreeListRequest, FileTreeListData]("listDocsByPath", "/api/filetree/listDocsByPath", AuthenticatedAccess, JSONBody, ResponseOptions{}, "POST")
 
 // 按可见直接子文档的当前排序读取范围；parentID 为空表示笔记本根级，其他值必须属于指定笔记本。
 // offset 为非负整数，limit 为 1..10240 的整数，省略时采用 docTreeBatchSize。返回 offset 不超过 total。
 // revision 是不透明的目录顺序版本。传入旧版本时返回 stale=true 和空 files，客户端须替换该目录状态后重试。
 // 隐藏、发布不可见及笔记本文档不计入 total；响应保留加密笔记本租约。旧 listDocsByPath 的上限语义不变。
+// files 可附带标题格式 titleFormat 和语义源版本 titleRevision；索引未就绪时省略，name 始终为纯文本摘要。
 var ListDocTreeRange = define[FileTreeRangeRequest, FileTreeRangeData]("listDocTreeRange", "/api/filetree/listDocTreeRange", AuthenticatedAccess, JSONBody, ResponseOptions{}, "POST")
 
 // 返回目标在各级可见兄弟列表中的位置和版本，steps 按根级到目标排列，无需先读取所有前置范围。

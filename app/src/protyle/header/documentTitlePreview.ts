@@ -2,22 +2,37 @@ import {fetchPost} from "../../util/fetch";
 import {sanitizeKernelHTML} from "../../util/hostCapabilities";
 import {mathRender} from "../render/mathRender";
 import {getDocDisplayName} from "../../util/pathName";
+import type {DocumentTitleData} from "../../types/api";
+
+export type DocumentTitlePreviewValue = Pick<DocumentTitleData, "id" | "notebook" | "format" | "text" | "empty" | "blockDOM">;
 
 const requests = new WeakMap<HTMLElement, number>();
 
+// 同一轮标题更新可直接提供已读取的源；仅在没有后续源投影时补查，避免页签重复读取。
+export const scheduleDocumentTitlePreview = (element: HTMLElement, id: string, notebook: string, isCurrent: () => boolean) => {
+    const request = requests.get(element);
+    queueMicrotask(() => {
+        if (element.isConnected && isCurrent() && requests.get(element) === request) {
+            renderDocumentTitlePreview(element, id, notebook, isCurrent);
+        }
+    });
+};
+
 // 只更新当前仍连接的预览节点；切换文档、锁定或清空会使迟到响应失效。
 export const renderDocumentTitlePreview = (element: HTMLElement, id: string, notebook: string,
-                                            isCurrent: () => boolean) => {
+                                            isCurrent: () => boolean, value?: DocumentTitlePreviewValue) => {
     if (!element || !id) return;
     const request = (requests.get(element) || 0) + 1;
     requests.set(element, request);
-    fetchPost("/api/block/getDocTitle", {id, notebook}, response => {
-        if (response.code !== 0 || !response.data || !element.isConnected || !isCurrent() ||
+    const apply = (value: DocumentTitlePreviewValue) => {
+        if (!element.isConnected || !isCurrent() ||
             requests.get(element) !== request) return;
-        const value = response.data;
         if (value.id !== id || notebook && value.notebook !== notebook) return;
         element.dataset.documentTitleId = id;
+        element.dataset.notebookId = value.notebook;
         if (value.format !== "inline-ast") {
+            element.classList.remove("b3-typography", "document-title-preview");
+            delete element.dataset.protyleLiteRender;
             element.textContent = getDocDisplayName(value.text, value.empty);
             return;
         }
@@ -39,5 +54,12 @@ export const renderDocumentTitlePreview = (element: HTMLElement, id: string, not
         element.dataset.protyleLiteRender = "safe";
         element.replaceChildren(...Array.from(content.childNodes));
         void mathRender(element);
+    };
+    if (value) {
+        apply(value);
+        return;
+    }
+    fetchPost("/api/block/getDocTitle", {id, notebook}, response => {
+        if (response.code === 0 && response.data) apply(response.data);
     });
 };

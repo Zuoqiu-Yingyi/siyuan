@@ -926,6 +926,8 @@ interface IFile {
     path: string;
     name: string;
     titleEmpty?: boolean;
+    titleFormat?: "plain" | "inline-ast";
+    titleRevision?: string;
     hMtime: string;
     hCtime: string;
     hSize: string;

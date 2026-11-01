@@ -9,6 +9,8 @@ export const updateMobileDocumentTitle = (protyle: IProtyle) => {
     if (!input || !label) return;
     const id = protyle.block.rootID;
     const notebook = protyle.notebookId;
+    const editor = label.querySelector<HTMLElement>(".mobile-document-title-editor");
+    if (editor?.dataset.documentTitleId === id && editor.dataset.notebookId === notebook) return;
     if (id === notebook) {
         label.textContent = input.value;
         return;

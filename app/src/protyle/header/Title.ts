@@ -33,9 +33,12 @@ import {getTextSiyuanFromClipboardData} from "../util/clipboardData";
 import {enterDocumentFromTitle} from "./titleEnter";
 import {setTitleAutoDirection} from "../render/autoDirection";
 import {DocumentTitleEditor} from "./documentTitleEditor";
+import {renderDocumentTitlePreview} from "./documentTitlePreview";
+import type {DocumentTitleEditorValue} from "./documentTitleEditor";
 import {waitForPendingTransactions} from "../util/transactionQueue";
 /// #if MOBILE
 import {updateMobileDocumentTitle} from "../../mobile/util/mobileDocumentTitle";
+import {callMobileAppShowKeyboard} from "../../mobile/util/mobileAppUtil";
 /// #endif
 
 export class Title {
@@ -50,6 +53,7 @@ export class Title {
     private sourceRequest = 0;
     private destroyed = false;
     private summary = "";
+    private mobileInlineElement?: HTMLElement;
 
     constructor(private protyle: IProtyle) {
         this.element = document.createElement("div");
@@ -442,10 +446,18 @@ export class Title {
         }
     }
 
-    private setSummary(title: string, empty: boolean) {
+    private setSummary(title: string, empty: boolean, value?: DocumentTitleEditorValue) {
         this.summary = empty ? "" : title;
         if (this.protyle.model?.parent) {
             this.protyle.model.parent.updateTitle(getDocDisplayName(title, empty));
+            if (value) {
+                const id = this.protyle.block.rootID;
+                const notebook = this.protyle.notebookId;
+                const tab = this.protyle.model.parent;
+                renderDocumentTitlePreview(tab.headElement.querySelector(".item__text"), id, notebook,
+                    () => this.protyle.block.rootID === id && this.protyle.notebookId === notebook && !this.destroyed,
+                    {...value, format: value.format || "inline-ast"});
+            }
         }
         /// #if MOBILE
         if (window.siyuan.mobile.editor?.protyle === this.protyle) {
@@ -511,8 +523,8 @@ export class Title {
                 element => {
                     this.editElement = element;
                     setTitleAutoDirection(element, window.siyuan.config.editor.autoDirection);
-                }, (text, empty) => this.setSummary(text, empty));
-            this.setSummary(response.data.text, response.data.empty);
+                }, (text, empty, value) => this.setSummary(text, empty, value));
+            this.setSummary(response.data.text, response.data.empty, response.data);
             if (offsets) {
                 focusByOffset(this.editElement, offsets.start, offsets.end);
             }
@@ -557,12 +569,35 @@ export class Title {
         const notebook = this.protyle.notebookId;
         let sourceRequest = this.sourceRequest;
         const canOpen = () => !this.destroyed && !this.protyle.disabled && !window.siyuan.isPublish &&
+            /// #if MOBILE
+            (window.siyuan.mobile.editor?.protyle !== this.protyle || this.protyle.preview.element.classList.contains("fn__none")) &&
+            /// #endif
             !window.siyuan.config.readonly && !this.protyle.options.history?.created &&
             !this.protyle.options.history?.snapshot && this.protyle.element.isConnected &&
             this.protyle.block.rootID === id && this.protyle.notebookId === notebook &&
             this.sourceRequest === sourceRequest && (!isValid || isValid());
         if (!canOpen()) {
             return;
+        }
+        if (!this.editElement) {
+            /// #if MOBILE
+            if (window.siyuan.mobile.editor?.protyle === this.protyle && id !== notebook) {
+                const label = document.getElementById("toolbarNameReadonly");
+                if (!label) return;
+                const container = document.createElement("div");
+                container.className = "mobile-document-title-editor";
+                container.dataset.documentTitleId = id;
+                container.dataset.notebookId = notebook;
+                const editable = document.createElement("div");
+                editable.textContent = this.summary;
+                container.appendChild(editable);
+                label.replaceChildren(container);
+                label.removeAttribute("role");
+                label.removeAttribute("tabindex");
+                this.mobileInlineElement = container;
+                this.editElement = editable;
+            }
+            /// #endif
         }
         if (!this.editElement) {
             const {openDocumentTitleDialog} = await import("./documentTitleDialog");
@@ -576,6 +611,12 @@ export class Title {
         await loading;
         if (canOpen()) {
             this.richEditor?.focus();
+            /// #if MOBILE
+            if (this.mobileInlineElement && this.editElement) {
+                this.editElement.focus({preventScroll: true});
+                callMobileAppShowKeyboard();
+            }
+            /// #endif
             if (selectAll && this.editElement) {
                 this.editElement.focus();
                 const range = this.editElement.ownerDocument.createRange();
@@ -619,6 +660,8 @@ export class Title {
         this.cancelPendingInput();
         this.richEditor?.destroy();
         this.richEditor = undefined;
+        this.mobileInlineElement?.remove();
+        this.mobileInlineElement = undefined;
     }
 
     public render(protyle: IProtyle, response: IWebSocketData) {
@@ -629,10 +672,15 @@ export class Title {
                 const host = this.richEditor.fragment.protyle.element;
                 this.richEditor.destroy();
                 this.richEditor = undefined;
-                host.replaceWith(this.plainEditElement);
+                if (this.plainEditElement) host.replaceWith(this.plainEditElement);
                 this.editElement = this.plainEditElement;
-                this.plainEditElement = undefined;
             }
+            if (this.mobileInlineElement) {
+                this.mobileInlineElement.remove();
+                this.mobileInlineElement = undefined;
+                this.editElement = undefined;
+            }
+            this.plainEditElement = undefined;
         }
         if (protyle.options.render.hideTitleOnZoom) {
             if (protyle.block.showAll) {

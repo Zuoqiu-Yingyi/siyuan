@@ -36,6 +36,7 @@ export interface DocumentTitleEditorValue {
     revision: string;
     text: string;
     empty: boolean;
+    format?: "plain" | "inline-ast";
 }
 
 const INLINE_SLASH_IDS = new Set([
@@ -73,7 +74,7 @@ export class DocumentTitleEditor {
 
     constructor(private owner: IProtyle, private host: HTMLElement, initial: DocumentTitleEditorValue,
                 private onEditable: (element: HTMLElement) => void,
-                private onSummary: (text: string, empty: boolean) => void) {
+                private onSummary: (text: string, empty: boolean, value?: DocumentTitleEditorValue) => void) {
         this.revision = initial.revision;
         host.classList.add("protyle-title__rich");
         host.dataset.protyleLiteRender = "safe";
@@ -116,7 +117,7 @@ export class DocumentTitleEditor {
         this.fragment.protyle.path = owner.path;
         this.saved = this.fingerprint();
         this.updateEditable();
-        this.setReadonly(owner.disabled);
+        this.syncReadonly();
         const dialogDraft = owner.element.classList.contains("document-title-dialog");
         if (!dialogDraft) {
             // 正文标题与正文共享内核撤销栈；重命名草稿使用片段的本地撤销栈。
@@ -321,7 +322,7 @@ export class DocumentTitleEditor {
             if (response.data.revision === this.revision) {
                 // 自己的保存回执只更新摘要，不能把正在输入的半段语法变成已有的字面文字。
                 this.refreshPending = false;
-                this.onSummary(response.data.text, response.data.empty);
+                this.onSummary(response.data.text, response.data.empty, response.data);
                 this.refreshDynamicAnchors(response.data.blockDOM);
             } else {
                 this.applyValue(response.data);
@@ -349,8 +350,8 @@ export class DocumentTitleEditor {
             this.revision = value.revision;
             this.saved = this.fingerprint();
             this.refreshPending = false;
-            this.onSummary(value.text, value.empty);
-            this.setReadonly(this.owner.disabled);
+            this.onSummary(value.text, value.empty, value);
+            this.syncReadonly();
             if (offsets && this.editable) {
                 focusByOffset(this.editable, offsets.start, offsets.end);
             }
@@ -453,6 +454,11 @@ export class DocumentTitleEditor {
         } else {
             this.fragment.instance.enable();
         }
+    }
+
+    private syncReadonly() {
+        this.setReadonly(this.owner.disabled || isMobile() && window.siyuan.mobile?.editor?.protyle === this.owner &&
+            !this.owner.preview.element.classList.contains("fn__none"));
     }
 
     public focus() {

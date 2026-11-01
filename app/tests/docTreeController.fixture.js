@@ -3,9 +3,15 @@ const path = require("node:path");
 
 exports.sources = () => {
     const ts = require("typescript");
-    return Object.fromEntries(["types", "DocTreeModel", "DocTreeController", "transactionOperations"].map(name => [name,
-        ts.transpileModule(readFileSync(path.join(__dirname, name === "transactionOperations" ? "../src/util" :
-            "../src/layout/dock/docTree", name + ".ts"), "utf8"), {
+    const files = {
+        types: "../src/layout/dock/docTree/types.ts",
+        DocTreeModel: "../src/layout/dock/docTree/DocTreeModel.ts",
+        DocTreeController: "../src/layout/dock/docTree/DocTreeController.ts",
+        transactionOperations: "../src/util/transactionOperations.ts",
+        documentTitlePreview: "../src/protyle/header/documentTitlePreview.ts",
+    };
+    return Object.fromEntries(Object.entries(files).map(([name, file]) => [name,
+        ts.transpileModule(readFileSync(path.join(__dirname, file), "utf8"), {
             compilerOptions: {target: ts.ScriptTarget.ES2021, module: ts.ModuleKind.CommonJS},
         }).outputText]));
 };
@@ -13,9 +19,14 @@ exports.sources = () => {
 exports.cases = async sources => {
     const check = require("node:assert/strict");
     const modules = {};
+    const titleReads = [];
     const load = name => {
         name = name.split("/").pop();
         if (name === "dataSource") { return {}; }
+        if (name === "fetch") { return {fetchPost: (_url, data, reply) => titleReads.push({data, reply})}; }
+        if (name === "hostCapabilities") { return {sanitizeKernelHTML: value => value}; }
+        if (name === "mathRender") { return {mathRender() {}}; }
+        if (name === "pathName") { return {getDocDisplayName: value => value}; }
         if (!modules[name]) {
             modules[name] = {};
             new Function("require", "exports", sources[name])(load, modules[name]);
@@ -85,6 +96,40 @@ exports.cases = async sources => {
         return {controller, element, directories, requests, locates, source, progress,
             revise: value => { revision = value; }, destroy: () => { controller.destroy(); element.remove(); }};
     };
+    {
+        const fixture = make(128);
+        const {controller, directories, element} = fixture;
+        directories.get("")[0].titleFormat = "inline-ast";
+        directories.get("")[0].titleRevision = "r1";
+        directories.get("")[1].titleFormat = "plain";
+        directories.get("")[100].titleFormat = "inline-ast";
+        await controller.toggle("notebook:box", true);
+        await frame();
+        check.deepEqual(titleReads.map(item => item.data.id), ["d0"], "only mounted rich titles request a preview");
+        const response = text => ({code: 0, data: {id: "d0", notebook: "box", format: "inline-ast", text,
+            blockDOM: `<div data-type="NodeParagraph"><div contenteditable="true"><span data-type="strong">${text}</span></div></div>`}});
+        titleReads.shift().reply(response("Styled title"));
+        const focusedRow = controller.getMountedElement("notebook:box/d0");
+        check.equal(focusedRow.querySelector('[data-type="strong"]').textContent, "Styled title");
+        focusedRow.focus();
+        controller.handleMessage({cmd: "reloadDocInfo", data: {box: "box", rootID: "d0", titleFormat: "inline-ast", titleRevision: "r2"}});
+        await frame();
+        check.equal(titleReads.length, 1, "style-only source changes refresh the mounted row");
+        check.equal(controller.getMountedElement("notebook:box/d0"), focusedRow, "title refresh preserves focused row identity");
+        const late = titleReads.shift();
+        controller.handleMessage({cmd: "reloadDocInfo", data: {box: "box", rootID: "d0", name: "Plain again", titleFormat: "plain", titleRevision: "r3"}});
+        await frame();
+        late.reply(response("Stale rich title"));
+        check.equal(focusedRow.querySelector(".b3-list-item__text").textContent, "Plain again");
+        check.equal(focusedRow.querySelector(".document-title-preview"), null, "plain titles drop rich rendering without replacing the focused row");
+        controller.handleMessage({cmd: "reloadDocInfo", data: {box: "box", rootID: "d0", titleFormat: "inline-ast", titleRevision: "r4"}});
+        await frame();
+        const locked = titleReads.shift();
+        controller.handleMessage({cmd: "closeBox", data: {box: "box"}});
+        locked.reply(response("Locked secret"));
+        check.equal(element.textContent.includes("Locked secret"), false, "notebook removal rejects late rich previews");
+        fixture.destroy();
+    }
     {
         const fixture = make();
         const {controller, element, requests, locates} = fixture;

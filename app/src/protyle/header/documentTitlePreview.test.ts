@@ -7,12 +7,12 @@ import {test} from "node:test";
 import {promisify} from "node:util";
 import {ModuleKind, ScriptTarget, transpileModule} from "typescript";
 
-const browserCases = (source: string) => {
+const browserCases = async (source: string, tabSource: string) => {
     const check: typeof assert = require("node:assert/strict");
     const requests: Array<{data: {id: string, notebook: string}, reply: (value: unknown) => void}> = [];
     let renders = 0;
     const exports: {renderDocumentTitlePreview?: (element: HTMLElement, id: string, notebook: string,
-        isCurrent: () => boolean) => void} = {};
+        isCurrent: () => boolean, value?: any) => void} = {};
     new Function("exports", "require", source)(exports, (name: string) => {
         if (name === "../../util/fetch") return {fetchPost: (_url: string, data: {id: string, notebook: string},
             reply: (value: unknown) => void) => requests.push({data, reply})};
@@ -75,10 +75,44 @@ const browserCases = (source: string) => {
     request().reply(result("", {format: "plain", text: "**literal** <tag> & slash/title"}));
     check.equal(target.textContent, "**literal** <tag> & slash/title");
     check.equal(target.querySelector("tag"), null);
+    check.equal(target.classList.contains("document-title-preview"), false, "plain titles leave the rich rendering path");
+    check.equal(target.dataset.protyleLiteRender, undefined);
     request().reply(result('<span class="img"><img src="assets/only.png" alt=""></span>', {text: "", empty: true}));
     check.equal(target.querySelector("img").getAttribute("src"), "assets/only.png", "empty summaries do not hide image-only titles");
     request().reply(result("", {text: "", empty: true}));
     check.equal(target.textContent, "Untitled");
+    const tabExports: any = {};
+    new Function("exports", "require", tabSource)(tabExports, (name: string) =>
+        name === "../protyle/header/documentTitlePreview" ? exports : {});
+    const header = document.createElement("li");
+    header.innerHTML = '<span class="item__text"></span>';
+    document.body.append(header);
+    const label = header.querySelector<HTMLElement>(".item__text");
+    const protyle = {block: {rootID: "document"}, notebookId: "encrypted-box"};
+    const tab = Object.assign(Object.create(tabExports.Tab.prototype), {headElement: header, model: {editor: {protyle}}});
+    render(label, "document", "encrypted-box", () => true, result('<span data-type="strong">Styled tab</span>').data);
+    check.equal(requests.length, 0, "already loaded title sources do not cause a second request");
+    tab.updateTitle("New summary");
+    await Promise.resolve();
+    check.equal(tab.title, "New summary", "persisted and window titles remain plain summaries");
+    check.equal(label.querySelector('[data-type="strong"]').textContent, "Styled tab", "tab refreshes preserve rich content while pending");
+    requests.shift().reply(result('<span data-type="em">New style</span>'));
+    check.ok(label.querySelector('[data-type="em"]'));
+    tab.updateTitle("Pending");
+    await Promise.resolve();
+    const previousTabRequest = requests.shift();
+    protyle.block.rootID = "another";
+    tab.updateTitle("**literal** <tag>");
+    previousTabRequest.reply(result('<span data-type="strong">Old document</span>'));
+    check.equal(label.textContent, "**literal** <tag>", "tab reuse rejects the previous document's response");
+    check.equal(label.classList.contains("document-title-preview"), false);
+    check.equal(requests.length, 0, "plain tab updates do not request rich rendering");
+    protyle.block.rootID = "document";
+    render(label, "document", "encrypted-box", () => true, result('<span data-type="strong">Current</span>').data);
+    tab.updateTitle("Current source");
+    render(label, "document", "encrypted-box", () => true, result('<span data-type="em">Already loaded</span>').data);
+    await Promise.resolve();
+    check.equal(requests.length, 0, "the editor's source update cancels redundant tab reads in the same turn");
     return "Outline document title cases passed";
 };
 
@@ -89,9 +123,12 @@ test("document title previews preserve native inline content, literal names and 
     const source = transpileModule(readFileSync(path.join(__dirname, "documentTitlePreview.ts"), "utf8"), {
         compilerOptions: {module: ModuleKind.CommonJS, target: ScriptTarget.ES2021},
     }).outputText;
+    const tabSource = transpileModule(readFileSync(path.join(__dirname, "../../layout/Tab.ts"), "utf8"), {
+        compilerOptions: {module: ModuleKind.CommonJS, target: ScriptTarget.ES2021},
+    }).outputText;
     const temporary = mkdtempSync(path.join(tmpdir(), "siyuan-outline-title-test-"));
     const script = path.join(temporary, "run.cjs");
-    const code = "const __name = value => value; (" + browserCases.toString() + ")(" + JSON.stringify(source) + ")";
+    const code = "const __name = value => value; (" + browserCases.toString() + ")(" + JSON.stringify(source) + "," + JSON.stringify(tabSource) + ")";
     writeFileSync(script, `const {app, BrowserWindow} = require("electron");
 app.setPath("userData", ${JSON.stringify(path.join(temporary, "profile"))});
 app.commandLine.appendSwitch("disable-gpu");

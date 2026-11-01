@@ -20,6 +20,15 @@
   }
 }
 
+.b3-list-item__text.document-title-preview,
+.item__text.document-title-preview,
+.mobile-tabs__item-title.document-title-preview {
+  max-height: 1.625em;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: inherit;
+}
+
 .protyle-lite-fragment .protyle-action__menu {
   display: none;
 }

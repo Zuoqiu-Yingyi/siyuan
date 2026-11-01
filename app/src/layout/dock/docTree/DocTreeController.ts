@@ -1,6 +1,7 @@
 import {DocTreeModel, getDocTreeWindow, type IDocTreeDirectory} from "./DocTreeModel";
 import {docTreeDataSource} from "./dataSource";
 import {getTransactionOperations} from "../../../util/transactionOperations";
+import {renderDocumentTitlePreview} from "../../../protyle/header/documentTitlePreview";
 import {docTreeDirectoryKey, docTreeParentID, type IDocTreeDataSource, type IDocTreeExpansion, type IDocTreeItem, type IDocTreeRoot,
     type IDocTreeSelectOptions, type IDocTreeRange} from "./types";
 
@@ -64,7 +65,7 @@ export class DocTreeController {
     private frame = 0;
     private rowHeight = 28;
     private rowSpacing = 0;
-    private mounted = new Map<string, {element: HTMLElement, signature: string}>();
+    private mounted = new Map<string, {element: HTMLElement, signature: string, titleVersion?: string}>();
     private expanding = new Map<string, {item: IDocTreeItem}>();
     private inFlight = new Map<string, {request: Promise<void>, directory: IDocTreeDirectory, isCurrent: () => boolean,
         indicatorTimer: number, showIndicator: boolean}>();
@@ -920,7 +921,7 @@ export class DocTreeController {
             });
         } else if (data.cmd === "reloadDocInfo") {
             const metadata: Partial<IFile> = {};
-            for (const key of ["name", "name1", "alias", "memo", "bookmark", "icon", "hMtime", "hCtime", "hSize", "subFileCount", "count", "titleEmpty"] as const) {
+            for (const key of ["name", "name1", "alias", "memo", "bookmark", "icon", "hMtime", "hCtime", "hSize", "subFileCount", "count", "titleEmpty", "titleFormat", "titleRevision"] as const) {
                 if (data.data[key] !== undefined) { Object.assign(metadata, {[key]: data.data[key]}); }
             }
             this.applyMetadata(data.data.rootID, metadata, true, data.data.box);
@@ -1376,6 +1377,24 @@ export class DocTreeController {
                     if (mounted) { this.observer.unobserve(mounted.element); }
                     mounted = {element: this.options.renderRow(item), signature};
                     this.mounted.set(item.occurrenceKey, mounted);
+                }
+                const titleVersion = JSON.stringify([item.file?.titleFormat, item.file?.titleRevision, item.name, item.file?.titleEmpty]);
+                if (mounted.titleVersion !== titleVersion) {
+                    mounted.titleVersion = titleVersion;
+                    const row = mounted.element;
+                    queueMicrotask(() => {
+                        if (!row.isConnected || this.disposed || this.mounted.get(item.occurrenceKey)?.element !== row ||
+                            this.mounted.get(item.occurrenceKey)?.titleVersion !== titleVersion) return;
+                        if (item.kind === "document" && item.file?.titleFormat === "inline-ast") {
+                            renderDocumentTitlePreview(row.querySelector(".b3-list-item__text"), item.id, item.notebookId,
+                                () => !this.disposed && this.mounted.get(item.occurrenceKey)?.element === row &&
+                                    this.mounted.get(item.occurrenceKey)?.titleVersion === titleVersion);
+                        } else if (row.querySelector(".document-title-preview")) {
+                            renderDocumentTitlePreview(row.querySelector(".b3-list-item__text"), item.id, item.notebookId,
+                                () => !this.disposed, {id: item.id, notebook: item.notebookId, format: "plain",
+                                    text: item.name, empty: !!item.file?.titleEmpty, blockDOM: ""});
+                        }
+                    });
                 }
                 retained.add(item.occurrenceKey);
                 this.decorate(mounted.element, item);

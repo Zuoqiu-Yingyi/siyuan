@@ -6,7 +6,7 @@
 		"id": "20200924101225-k254i8g",
 		"title": "Content Block Type",
 		"type": "doc",
-		"updated": "20261101011641"
+		"updated": "20261101094922"
 	},
 	"Children": [
 		{
@@ -3364,12 +3364,12 @@
 			"Type": "NodeParagraph",
 			"Properties": {
 				"id": "20261025133233-2qcn948",
-				"updated": "20261101011641"
+				"updated": "20261101094922"
 			},
 			"Children": [
 				{
 					"Type": "NodeText",
-					"Data": "Document titles support all native inline elements, including combined text styles, images, links, tags, block references, inline formulas, memos, and file annotation references. Edit the full title above the document; the mobile top bar also displays inline styles and images, and tapping it opens a bottom drawer for editing. The drawer uses the interface font size and follows the visible area above the keyboard. Long titles can be scrolled. Changes in the rename dialog are saved only after confirmation; dismissing it cancels the draft. File trees, tabs, and breadcrumbs in the document show a plain-text summary."
+					"Data": "Document titles support all native inline elements, including combined text styles, images, links, tags, block references, inline formulas, memos, and file annotation references. Edit the complete title directly above the document or in the mobile top bar; new mobile documents focus the top bar for immediate typing. The Rename action opens a bottom drawer on mobile. The drawer uses the interface font size, follows the visible area above the keyboard, and scrolls long titles. Changes in the rename dialog are saved only after confirmation; dismissing it cancels the draft. File trees and tabs render inline styles and images, while plain titles use ordinary text. Window titles and document breadcrumbs show a plain-text summary."
 				}
 			]
 		},

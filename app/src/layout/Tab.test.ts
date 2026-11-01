@@ -6,7 +6,7 @@ import {runInNewContext} from "node:vm";
 import {ModuleKind, ScriptTarget, transpileModule} from "typescript";
 
 const loadTab = () => {
-    const labels = new WeakMap<object, {innerHTML: string}>();
+    const labels = new WeakMap<object, {textContent: string, classList: {remove: () => void}, dataset: Record<string, string>}>();
     const createElement = () => {
         const classes = new Set<string>();
         const element = {
@@ -17,7 +17,7 @@ const loadTab = () => {
             addEventListener() {},
             querySelector: (selector: string) => selector === ".item__text" ? labels.get(element) : null,
         };
-        labels.set(element, {innerHTML: ""});
+        labels.set(element, {textContent: "", classList: {remove: () => {}}, dataset: {}});
         return element;
     };
     const exports = {} as {Tab: new (options: {title?: string; icon?: string; panel?: string}) => {
@@ -44,9 +44,9 @@ test("an explicitly empty title creates a header that can receive later title up
     assert.equal(tab.title, "");
     assert.match(tab.headElement.innerHTML, /class="item__text"/);
     tab.updateTitle("Changed");
-    assert.equal(labels.get(tab.headElement)?.innerHTML, "Changed");
+    assert.equal(labels.get(tab.headElement)?.textContent, "Changed");
     tab.updateTitle("");
-    assert.equal(labels.get(tab.headElement)?.innerHTML, "");
+    assert.equal(labels.get(tab.headElement)?.textContent, "");
 });
 
 test("omitting both title and icon preserves a headerless panel", () => {

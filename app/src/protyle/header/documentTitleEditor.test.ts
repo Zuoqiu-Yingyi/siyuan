@@ -92,19 +92,21 @@ const markAsDraft = (state: EditorState) => {
 };
 
 test("rename construction retains local undo and toolbar history while inline titles keep automatic saving", async () => {
-    for (const draft of [false, true]) {
+    for (const {draft, preview} of [{draft: false, preview: false}, {draft: true, preview: false}, {draft: false, preview: true}]) {
         let changed: () => void;
         let toolbarOwner: unknown;
         let toolbarUndo: (redo: boolean) => void;
         let scheduled = 0;
         let localUndos = 0;
+        let disabled = false;
         const listeners = new Map<string, () => void>();
         const editable = {classList: {contains: () => true}, dataset: {tip: "Untitled"}};
         const localUndo = {undo: () => localUndos++, redo: () => {}, clear: () => {}};
         const fragment = {protyle: {block: {}, undo: localUndo, wysiwyg: {flushPendingInput: async () => {}}},
             wysiwyg: {querySelector: () => editable}, getBlockHTML: () => "initial",
-            instance: {enable: () => {}}};
-        const owner = {element: {classList: {contains: () => draft}}, block: {rootID: "doc"}};
+            instance: {enable: () => { disabled = false; }, disable: () => { disabled = true; }}};
+        const owner = {element: {classList: {contains: () => draft}}, block: {rootID: "doc"},
+            preview: {element: {classList: {contains: () => !preview}}}};
         const host = {classList: {add: () => {}}, dataset: {},
             addEventListener: (type: string, listener: () => void) => listeners.set(type, listener)};
         const moduleExports: {DocumentTitleEditor?: new (...args: unknown[]) => unknown} = {};
@@ -127,10 +129,12 @@ test("rename construction retains local undo and toolbar history while inline ti
             compilerOptions: {module: ModuleKind.CommonJS, target: ScriptTarget.ES2021},
         }).outputText, {exports: moduleExports, require: () => dependencies, clearTimeout: () => {},
             Lute: {NewNodeID: () => "paragraph"},
-            window: {setTimeout: () => ++scheduled, siyuan: {languages: {_kernel: {16: "Untitled"}}}}});
+            window: {setTimeout: () => ++scheduled, siyuan: {languages: {_kernel: {16: "Untitled"}},
+                mobile: preview ? {editor: {protyle: owner}} : {}}}});
         new moduleExports.DocumentTitleEditor(owner, host, {blockDOM: "initial", revision: "r0"}, () => {}, () => {});
         assert.equal(toolbarOwner, draft ? fragment.protyle : owner);
         assert.equal(fragment.protyle.undo === localUndo, draft);
+        assert.equal(disabled, preview, "late source loading keeps preview-mode titles readonly");
         changed();
         assert.equal(scheduled, draft ? 0 : 1);
         if (draft) {

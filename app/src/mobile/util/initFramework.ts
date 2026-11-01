@@ -468,10 +468,12 @@ const initEditorName = () => {
     inputElement.addEventListener("click", openTitle);
     const label = document.getElementById("toolbarNameReadonly");
     label.addEventListener("click", (event) => {
+        if ((event.target as HTMLElement).closest(".mobile-document-title-editor")) return;
         event.preventDefault();
         openTitle();
     });
     label.addEventListener("keydown", (event: KeyboardEvent) => {
+        if ((event.target as HTMLElement).closest(".mobile-document-title-editor")) return;
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             openTitle();

@@ -27829,6 +27829,16 @@
         },
         "titleEmpty": {
           "type": "boolean"
+        },
+        "titleFormat": {
+          "type": "string",
+          "enum": [
+            "plain",
+            "inline-ast"
+          ]
+        },
+        "titleRevision": {
+          "type": "string"
         }
       },
       "required": [
