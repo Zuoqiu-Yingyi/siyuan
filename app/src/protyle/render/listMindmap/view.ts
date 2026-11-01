@@ -1749,6 +1749,29 @@ export class ListMindmapView {
         input.setAttribute("aria-label", this.label("listMindmapSummary"));
         input.style.left = `${position.labelX}px`;
         input.style.top = `${position.labelY}px`;
+        const nativeSizing = CSS.supports("field-sizing", "content");
+        const resizeInput = () => {
+            if (nativeSizing) {
+                return;
+            }
+            // 不支持内容自适应的 WebView 按实际字体测量，宽度上下限由样式控制。
+            const style = getComputedStyle(input);
+            const measure = document.createElement("span");
+            measure.style.position = "absolute";
+            measure.style.visibility = "hidden";
+            measure.style.whiteSpace = "pre";
+            (["fontFamily", "fontSize", "fontWeight", "fontStyle", "fontStretch", "fontVariant",
+                "letterSpacing", "wordSpacing", "textTransform"] as const).forEach(key => {
+                measure.style[key] = style[key];
+            });
+            measure.textContent = input.value || " ";
+            this.world.append(measure);
+            input.style.width = `${measure.offsetWidth + parseFloat(style.paddingLeft) + parseFloat(style.paddingRight) +
+                parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth) + 1}px`;
+            measure.remove();
+        };
+        input.addEventListener("input", resizeInput);
+        input.addEventListener("compositionend", resizeInput);
         this.editingSummary = id;
         let finished = false;
         const finish = (save: boolean) => {
@@ -1775,6 +1798,7 @@ export class ListMindmapView {
             }
         });
         this.world.append(input);
+        resizeInput();
         input.style.top = `${position.labelY + (position.height - input.offsetHeight) / 2}px`;
         this.draw();
         input.focus();

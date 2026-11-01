@@ -886,7 +886,7 @@
   &__summary-editor {
     position: absolute;
     field-sizing: content;
-    min-width: 80px;
+    min-width: calc(2em + 16px);
     max-width: 240px;
     z-index: 6;
   }

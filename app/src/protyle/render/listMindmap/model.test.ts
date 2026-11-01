@@ -5339,24 +5339,52 @@ const browserCases = async (sourceCode: string, css: string, taskSource: string,
         check.equal(summaryButton.disabled, false, "a single real node can create a summary");
         check.equal(api.readListMindmap(summaryList).metadata.summaries?.length || 0, 0,
             "selecting a single node does not create a summary automatically");
-        if (id === summaryIds[0]) {
-            await require("electron").ipcRenderer.invoke("mindmap-view-native-touch", [
-                {type: "touchStart", touchPoints: [{id: 1, ...centerPoint(summaryButton)}]},
-                {type: "touchEnd", touchPoints: []},
-            ]);
-            await settle();
-        } else {
-            await clickMouse(summaryButton);
+        const fallbackSizing = id === summaryIds[1];
+        const originalSupports = CSS.supports;
+        if (fallbackSizing) {
+            CSS.supports = (property: string, value?: string) => property === "field-sizing" ? false :
+                value === undefined ? originalSupports(property) : originalSupports(property, value);
+        }
+        try {
+            if (id === summaryIds[0]) {
+                await require("electron").ipcRenderer.invoke("mindmap-view-native-touch", [
+                    {type: "touchStart", touchPoints: [{id: 1, ...centerPoint(summaryButton)}]},
+                    {type: "touchEnd", touchPoints: []},
+                ]);
+                await settle();
+            } else {
+                await clickMouse(summaryButton);
+            }
+        } finally {
+            CSS.supports = originalSupports;
         }
         check.deepEqual(api.readListMindmap(summaryList).metadata.summaries[0].nodeIds, [id]);
         const editor = summaryHost.querySelector<HTMLInputElement>(".mindmap-view__summary-editor");
         check.ok(editor, "single-node creation opens summary text editing");
         check.equal(document.activeElement, editor);
-        check.ok(editor.offsetWidth >= 80 && editor.offsetWidth < 240, "short summaries use a compact input");
+        if (fallbackSizing) {
+            editor.style.setProperty("field-sizing", "fixed");
+        }
+        editor.value = "概要";
+        editor.dispatchEvent(new Event("input", {bubbles: true}));
+        check.ok(editor.offsetWidth >= 44 && editor.offsetWidth <= 46,
+            "two Chinese characters use two em plus shared input padding with native and fallback sizing");
+        const shortWidth = editor.offsetWidth;
         editor.value = "Long summary text ".repeat(10);
         editor.dispatchEvent(new Event("input", {bubbles: true}));
         await settle();
-        check.ok(editor.offsetWidth <= 240, "long summaries keep the maximum input width");
+        check.ok(editor.offsetWidth > shortWidth && editor.offsetWidth <= 240,
+            "native and fallback inputs grow up to the maximum width");
+        editor.value = "";
+        editor.dispatchEvent(new Event("input", {bubbles: true}));
+        check.equal(editor.offsetWidth, 44, "clearing text shrinks the input to its minimum width");
+        editor.value = "输入法组合文字";
+        editor.dispatchEvent(new Event("input", {bubbles: true}));
+        editor.dispatchEvent(new KeyboardEvent("keydown", {key: "Enter", isComposing: true, bubbles: true}));
+        check.equal(document.activeElement, editor, "composition Enter keeps the summary editor open");
+        editor.value = "概要";
+        editor.dispatchEvent(new CompositionEvent("compositionend", {data: editor.value, bubbles: true}));
+        check.ok(editor.offsetWidth >= 44 && editor.offsetWidth <= 46, "composition completion also updates width");
         editor.value = "Single node summary";
         editor.dispatchEvent(new KeyboardEvent("keydown", {key: "Enter", bubbles: true}));
         await settle();
