@@ -1,0 +1,87 @@
+kernel/model/caldav_query_test.go
+  s_9b4be339310ec6::t_8051bf1f50aff8 8-9,17-52
+kernel/model/dav_etag_test.go
+  s_9b4be339310ec6::t_c86f820f897d7b 59-115
+  s_9b4be339310ec6::t_0fb7ba975058ab 8,10,12
+kernel/model/dav_persistence_test.go
+  s_9b4be339310ec6::t_829ecc509604a6 99
+  s_9b4be339310ec6::t_a8abaee3413db6 71
+kernel/model/dav.go
+  s_9b4be339310ec6::t_f05ed95a111d6b 8
+  s_9b4be339310ec6::t_9ef1b7a68038fa 64-102,104,107,110-111,113,116-152,155-168,172-188,194,196,201
+  s_9b4be339310ec6::t_b55fc18e4f6127 217,225-238
+kernel/server/serve_dav_test.go
+  s_9b4be339310ec6::t_1ed9951ca6ab5a 1-100
+kernel/model/dav_errors_test.go
+  s_9b4be339310ec6::t_8e625d9f298f28 1-54
+kernel/model/dav_delete_test.go
+  s_9b4be339310ec6::t_bf7c9b69ba526b 57
+  s_9b4be339310ec6::t_f7b357b063fcbc 24
+kernel/model/dav_handler_test.go
+  s_9b4be339310ec6::t_73421906c5b7eb 1-178
+kernel/model/carddav_test.go
+  s_9b4be339310ec6::t_c32447b3c67997 1-78
+kernel/server/serve_dav.go
+  s_9b4be339310ec6::t_da54dfc783e0ca 79
+  s_9b4be339310ec6::t_2e873b62f8de1a 9,12-14,17,24-26,32,43-78,80-97
+  s_9b4be339310ec6::t_ee63da14870327 8,11
+kernel/model/carddav.go
+  s_9b4be339310ec6::t_1f7dc86a5ed69c 822
+  s_9b4be339310ec6::t_a4cb973b717078 318,328,337,342-343,345-346,349-353,355-358,362-363,365-369,375,379-380,383-386,388-395,404
+  s_9b4be339310ec6::t_23bae0448d8571 10-11
+  s_9b4be339310ec6::t_f146d8db281de1 507-510
+  s_9b4be339310ec6::t_7e079fafe09f0a 622-627,636-642,657
+  s_9b4be339310ec6::t_3d4ccc21683aad 538,542,557-578
+  s_9b4be339310ec6::t_e3d8351c230ae7 794
+  s_9b4be339310ec6::t_a6e707e63fd3a5 768
+  s_9b4be339310ec6::t_dcce97bebf9d23 808
+  s_9b4be339310ec6::t_5c14cbcca6982c 279,300
+  s_9b4be339310ec6::t_d7f13ce91b1e01 90-104,117-121,129,142,144-152,159
+  s_9b4be339310ec6::t_d19376502409ec 836,850-852,854-870,881-882
+kernel/model/dav_conditions_test.go
+  s_9b4be339310ec6::t_9e05f162ecd837 89,96-97,99-102
+  s_9b4be339310ec6::t_6127e8635420ef 70-74
+  s_9b4be339310ec6::t_fb9b1b2baaf1ad 152-194
+kernel/model/dav_handler.go
+  s_9b4be339310ec6::t_41fe06ea744ea0 1-7,10,12,14-17,19-20,23-24,26,98
+  s_9b4be339310ec6::t_f70887a03f18f3 59-65,84
+  s_9b4be339310ec6::t_60a9fd6cbda9fd 27
+  s_9b4be339310ec6::t_1aefaeb46d57f4 22,29
+  s_9b4be339310ec6::t_9e547ff5b6e8f7 8-9,11,13,18,21,25,28,30-56,58,66-74,77-83,85-97
+  s_9b4be339310ec6::t_555f82c3b82e1f 57
+  s_9b4be339310ec6::t_06d3b073d813f1 75-76
+kernel/model/caldav.go
+  s_9b4be339310ec6::t_6d328e5b45d38a 243,264
+  s_9b4be339310ec6::t_c6b961b1f3510a 837
+  s_9b4be339310ec6::t_08885949675245 823
+  s_9b4be339310ec6::t_01f0c1ae2e6437 851,856,865-872
+  s_9b4be339310ec6::t_4cf682d083b37c 76,80-92,105-117,125
+  s_9b4be339310ec6::t_f086967ed5ee56 600-604,610-665
+  s_9b4be339310ec6::t_0fecac2204d593 278,283-284,286-287,289-290,293-302,306-307,309-313,324,334-335,343,347-348,351-354,356-363,372,407-408
+  s_9b4be339310ec6::t_936a5181410d93 12,16
+  s_9b4be339310ec6::t_263f1fadee9406 478-479,483-505,517,521
+  s_9b4be339310ec6::t_49015eda698366 764,777,791-793,795-811
+kernel/model/dav_collections_test.go
+  s_9b4be339310ec6::t_a4d7a57db05a6f 1-87
+kernel/model/dav_validation_test.go
+  s_9b4be339310ec6::t_1bc02dafd79bed 1-84
+kernel/server/serve.go
+  s_9b4be339310ec6::t_a0caf1078d9b57 2205
+  s_9b4be339310ec6::t_8bfbb24abe51b2 2236
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.51-trip",
+  "base_commit_sha": "173d622fa8e03dde014be7343eb139f78f94be02",
+  "prompts": {},
+  "sessions": {
+    "s_9b4be339310ec6": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_y3ii3qdv1b45",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
