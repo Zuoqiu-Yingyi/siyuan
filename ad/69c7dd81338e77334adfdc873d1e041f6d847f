@@ -1,0 +1,33 @@
+kernel/model/dav_persistence_test.go
+  s_3b8dfbe1614341::t_37e804e86baabd 187-292
+  s_3b8dfbe1614341::t_812af8aa49235e 8,13
+kernel/model/dav.go
+  s_3b8dfbe1614341::t_e0499dbf0c1295 251-295,297,302-309
+  s_3b8dfbe1614341::t_acd9aa9fd7b156 296,298-301
+kernel/model/carddav.go
+  s_3b8dfbe1614341::t_6795aaa8528e67 437
+  s_3b8dfbe1614341::t_11d99637c8007c 248-261
+  s_3b8dfbe1614341::t_eb5798f9ab6cbc 408
+  s_3b8dfbe1614341::t_ade1c055a31bf4 391-392
+kernel/model/caldav.go
+  s_3b8dfbe1614341::t_786cc612c9297d 362
+  s_3b8dfbe1614341::t_8f7e900ab66266 223-236
+  s_3b8dfbe1614341::t_f86f51669439f1 345-346
+  s_3b8dfbe1614341::t_79af5896aecf5f 395
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.51-trip",
+  "base_commit_sha": "ad69c7dd81338e77334adfdc873d1e041f6d847f",
+  "prompts": {},
+  "sessions": {
+    "s_3b8dfbe1614341": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_78qgho58hpil",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
