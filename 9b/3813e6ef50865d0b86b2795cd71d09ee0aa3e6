@@ -1,0 +1,95 @@
+kernel/server/serve.go
+  s_9b4be339310ec6::t_025cab6247144f 25
+  s_9b4be339310ec6::t_1c8241cc03c983 2072
+  s_9b4be339310ec6::t_180f83ebc97bae 2087-2118,2121,2123-2125,2127,2134-2137,2139
+  s_9b4be339310ec6::t_ea10d5ff6ffdcc 2120,2122
+  s_9b4be339310ec6::t_93e0e302978396 2138
+  s_9b4be339310ec6::t_a0caf1078d9b57 2205
+  s_9b4be339310ec6::t_8bfbb24abe51b2 2236
+kernel/model/caldav_query_test.go
+  s_9b4be339310ec6::t_8051bf1f50aff8 8-9,19-30,32,35,39,41-42,44-52
+  s_3b8dfbe1614341::t_c4ea525c3ff512 92-93
+kernel/model/caldav.go
+  s_9b4be339310ec6::t_936a5181410d93 12,16
+  s_9b4be339310ec6::t_4cf682d083b37c 76,80-92,105-109,112,114-117,125
+  s_3b8dfbe1614341::t_b0c94d17008bc5 98-99,317-318,341-342,374
+  s_9b4be339310ec6::t_6d328e5b45d38a 243,264
+  s_9b4be339310ec6::t_0fecac2204d593 286,289,293-302,306-307,309-313,324,334-335,343,347-348,351-354,356-363,372,408
+  s_9b4be339310ec6::t_263f1fadee9406 517,521
+  s_9b4be339310ec6::t_f086967ed5ee56 610-624,626-627,629-630,632-642,644-646,648-649,651-652,654,656,660,662,665
+  s_3b8dfbe1614341::t_722892d139467f 718,720,767,775,791,812,817,826,834,840
+  s_9b4be339310ec6::t_49015eda698366 788-789,793
+  s_9b4be339310ec6::t_01f0c1ae2e6437 870
+kernel/model/dav_conditions_test.go
+  s_9b4be339310ec6::t_6127e8635420ef 71-73
+  s_9b4be339310ec6::t_9e05f162ecd837 89,96-97,99-102
+  s_9b4be339310ec6::t_fb9b1b2baaf1ad 152-194
+kernel/model/dav_delete_test.go
+  s_9b4be339310ec6::t_bf7c9b69ba526b 57
+kernel/model/carddav_test.go
+  s_9b4be339310ec6::t_c32447b3c67997 1-78
+kernel/model/dav_handler.go
+  s_9b4be339310ec6::t_41fe06ea744ea0 1-7,10,12,16-17,19,23-24,26,98
+  s_9b4be339310ec6::t_9e547ff5b6e8f7 8-9,11,18,25,32-53,93,96
+  s_3b8dfbe1614341::t_e33b53ff0dead7 30-31,54-55,83,86-87
+kernel/model/dav_persistence_test.go
+  s_9b4be339310ec6::t_a8abaee3413db6 71
+  s_9b4be339310ec6::t_829ecc509604a6 99
+kernel/model/dav.go
+  s_9b4be339310ec6::t_9ef1b7a68038fa 64-65,68-69,75-76,97-102,104,107,110-111,113,116-152,155-156,178-179,182-183,185-188,194,196,201
+  s_3b8dfbe1614341::t_e5575c10f75ae5 164,166,168-169
+  s_9b4be339310ec6::t_b55fc18e4f6127 217,223-224
+  s_3b8dfbe1614341::t_13d94f95e3826e 230,232-233,235,239-240,247
+kernel/model/dav_handler_test.go
+  s_9b4be339310ec6::t_73421906c5b7eb 1-8,10-18,21-126,129-130,134-135,137-145,148-153,158-178
+  s_3b8dfbe1614341::t_71801dd6e29ce5 154-157
+kernel/model/dav_validation_test.go
+  s_9b4be339310ec6::t_1bc02dafd79bed 1-37,39-45,47-68,70-84
+kernel/model/carddav.go
+  s_9b4be339310ec6::t_23bae0448d8571 10-11
+  s_9b4be339310ec6::t_d7f13ce91b1e01 90-104,117-121,129
+  s_3b8dfbe1614341::t_d554616b0aa022 215,373-374,406,555-556,839,847,850,852,863,867,879
+  s_9b4be339310ec6::t_5c14cbcca6982c 279,300
+  s_9b4be339310ec6::t_a4cb973b717078 318,328,345,349-353,355-358,362-363,365-369,375,379-380,383-386,388-395,404
+  s_9b4be339310ec6::t_f146d8db281de1 508-510
+  s_9b4be339310ec6::t_3d4ccc21683aad 538,542,557,559,561-564,566,568,572,574,577-578
+  s_9b4be339310ec6::t_7e079fafe09f0a 636-637,639-642,657
+  s_9b4be339310ec6::t_d19376502409ec 819-820
+kernel/server/serve_dav.go
+  s_9b4be339310ec6::t_2e873b62f8de1a 1-7,10,15-16,18-23,27-31,33-42,98,9,12-14,17,24-26,32,43-78,80-97
+  s_9b4be339310ec6::t_ee63da14870327 8,11
+  s_9b4be339310ec6::t_da54dfc783e0ca 79
+kernel/model/dav_etag_test.go
+  s_9b4be339310ec6::t_0fb7ba975058ab 8,10,12
+  s_9b4be339310ec6::t_c86f820f897d7b 59-84,86-115
+kernel/server/serve_dav_test.go
+  s_9b4be339310ec6::t_1ed9951ca6ab5a 1-100
+kernel/model/dav_collections_test.go
+  s_9b4be339310ec6::t_a4d7a57db05a6f 1-87
+kernel/model/dav_errors_test.go
+  s_9b4be339310ec6::t_8e625d9f298f28 1-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.51-trip",
+  "base_commit_sha": "9b3813e6ef50865d0b86b2795cd71d09ee0aa3e6",
+  "prompts": {},
+  "sessions": {
+    "s_3b8dfbe1614341": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_78qgho58hpil",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    },
+    "s_9b4be339310ec6": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_y3ii3qdv1b45",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
