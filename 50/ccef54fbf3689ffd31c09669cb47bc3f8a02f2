@@ -1,0 +1,25 @@
+kernel/model/dav.go
+  s_3b8dfbe1614341::t_4bf93d2be3c609 17,311-334
+kernel/model/dav_persistence_test.go
+  s_3b8dfbe1614341::t_4bf93d2be3c609 188-271
+kernel/model/caldav.go
+  s_3b8dfbe1614341::t_4bf93d2be3c609 449-452,454-458,460,462-464
+kernel/model/carddav.go
+  s_3b8dfbe1614341::t_4bf93d2be3c609 467-470,472-476,478,480-482
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.51-trip",
+  "base_commit_sha": "50ccef54fbf3689ffd31c09669cb47bc3f8a02f2",
+  "prompts": {},
+  "sessions": {
+    "s_3b8dfbe1614341": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_78qgho58hpil",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
