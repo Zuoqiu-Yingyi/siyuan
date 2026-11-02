@@ -1,0 +1,21 @@
+kernel/dav/xml_test.go
+  s_3b8dfbe1614341::t_046828f0c84dd4 54-83
+kernel/dav/xml.go
+  s_3b8dfbe1614341::t_046828f0c84dd4 182-184,189-191,196,207
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.51-trip",
+  "base_commit_sha": "612d11fa741725efb7a58176667004b39eb76d00",
+  "prompts": {},
+  "sessions": {
+    "s_3b8dfbe1614341": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_78qgho58hpil",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
