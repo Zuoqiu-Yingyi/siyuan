@@ -1,0 +1,21 @@
+kernel/server/serve_dav.go
+  s_3b8dfbe1614341::t_8452a1b83e18b1 114
+kernel/server/serve.go
+  s_3b8dfbe1614341::t_8452a1b83e18b1 22,2075-2136,2154-2156,2165,2168-2170,2182-2184,2192,2199,2206,2213,2220
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.51-trip",
+  "base_commit_sha": "80f7ce683f8561be5e3143ae66bfddfa163b40ae",
+  "prompts": {},
+  "sessions": {
+    "s_3b8dfbe1614341": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_78qgho58hpil",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Yingyi / 颖逸 <49649786+Zuoqiu-Yingyi@users.noreply.github.com>"
+    }
+  }
+}
